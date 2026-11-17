@@ -1,0 +1,13 @@
+# Base sin comprimir (en el repo va la versión .csv.gz)
+*.csv
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+# Archivos temporales de Office
+~$*
+# Respaldos locales
+respaldo*/
+# Windows
+desktop.ini
+Thumbs.db

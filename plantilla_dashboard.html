@@ -1,0 +1,1095 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard EHP Chile</title>
+<style>
+:root{
+  --navy:#1B365D; --azul:#1D4E89; --azul2:#2E5B88; --celeste:#A6CEE3; --naranjo:#B5400B; --naranjo2:#E07B39;
+  --verde:#2E7D32; --morado:#6B3FA0; --gris:#6B7280; --gris2:#9CA3AF;
+  --fondo:#F4F6F9; --tarjeta:#FFFFFF; --borde:#E2E6EC; --texto:#1F2937; --suave:#4B5563; --tenue:#EEF2F7;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--fondo);color:var(--texto);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+a{color:var(--azul)}
+header.top{background:var(--navy);color:#fff;padding:22px 28px 18px}
+header.top h1{margin:0;font-size:24px;font-weight:650;letter-spacing:.2px}
+header.top p{margin:4px 0 0;color:#C9D6E8;font-size:14px}
+nav.tabs{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--borde);display:flex;gap:2px;padding:0 16px;overflow-x:auto}
+nav.tabs button{appearance:none;border:0;background:none;padding:13px 14px;font:inherit;font-size:14px;color:var(--suave);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+nav.tabs button:hover{color:var(--navy)}
+nav.tabs button.activo{color:var(--navy);font-weight:650;border-bottom-color:var(--naranjo)}
+main{max-width:1320px;margin:0 auto;padding:20px 20px 60px}
+section.tab{display:none}
+section.tab.activo{display:block}
+h2{color:var(--navy);font-size:21px;margin:26px 0 6px;font-weight:650}
+h2:first-child{margin-top:4px}
+h3{color:var(--navy);font-size:16px;margin:0 0 4px;font-weight:650}
+.sub{color:var(--suave);margin:0 0 14px;font-size:14px}
+.tarjeta{background:var(--tarjeta);border:1px solid var(--borde);border-radius:10px;padding:16px 18px;margin-bottom:16px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g2>.tarjeta,.g3>.tarjeta,.g4>.tarjeta{margin-bottom:0}
+@media (max-width:980px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border:1px solid var(--borde);border-left:4px solid var(--azul);border-radius:8px;padding:10px 14px}
+.kpi .v{font-size:23px;font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12.5px;color:var(--suave)}
+.kpi.acento{border-left-color:var(--naranjo)}
+.graf{width:100%;height:360px}
+.graf.alto{height:460px}
+.graf.muyalto{height:640px}
+.graf.bajo{height:290px}
+.fuente{font-size:12px;color:var(--gris);margin-top:6px}
+.etq{display:inline-block;font-size:11.5px;font-weight:600;color:var(--azul);background:#E8F0FA;border-radius:999px;padding:2px 9px;margin-left:6px;vertical-align:2px}
+.etq.n{color:var(--naranjo);background:#FBEDE5}
+.interp{background:var(--tenue);border-left:4px solid var(--azul2);border-radius:0 8px 8px 0;padding:10px 14px;margin-top:10px;font-size:14px}
+.interp p{margin:0 0 6px}.interp p:last-child{margin:0}
+.interp ul{margin:4px 0 0;padding-left:20px}
+.aviso{background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:8px 12px;font-size:13.5px;color:#7C2D12;margin:0 0 12px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th{background:var(--navy);color:#fff;text-align:left;font-weight:600;padding:7px 9px;position:sticky;top:0}
+td{padding:6px 9px;border-bottom:1px solid var(--borde);vertical-align:top}
+tr:nth-child(even) td{background:#FAFBFD}
+td.num,th.num{text-align:right;white-space:nowrap}
+tr.grupo td{background:#E8EEF6 !important;font-weight:650;color:var(--navy)}
+tr.sig-no td{color:var(--gris)}
+.tabla-scroll{max-height:460px;overflow:auto;border:1px solid var(--borde);border-radius:8px}
+.filtros{position:sticky;top:47px;z-index:15;background:#fff;border:1px solid var(--borde);border-radius:10px;padding:10px 14px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;box-shadow:0 2px 6px rgba(15,23,42,.05)}
+.filtros label{display:flex;flex-direction:column;font-size:12px;color:var(--suave);gap:3px}
+select,input[type=number]{font:inherit;font-size:14px;padding:6px 8px;border:1px solid #CBD2DC;border-radius:6px;background:#fff;color:var(--texto);min-width:130px}
+button.btn{font:inherit;font-size:13.5px;padding:7px 12px;border-radius:6px;border:1px solid #CBD2DC;background:#fff;color:var(--navy);cursor:pointer}
+button.btn:hover{background:#F1F5FB}
+button.btn.prim{background:var(--navy);color:#fff;border-color:var(--navy)}
+button.btn.prim:hover{background:#25467a}
+.filtros .estado{margin-left:auto;font-size:13px;color:var(--suave);text-align:right}
+.filtros .estado b{color:var(--navy)}
+.seg{display:inline-flex;border:1px solid #CBD2DC;border-radius:7px;overflow:hidden;flex-wrap:wrap}
+.seg button{font:inherit;font-size:13px;border:0;background:#fff;padding:6px 11px;cursor:pointer;color:var(--suave);border-right:1px solid #E5E7EB}
+.seg button:last-child{border-right:0}
+.seg button.activo{background:var(--navy);color:#fff}
+.fila-ctrl{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:4px 0 10px}
+.fila-ctrl .lbl{font-size:13px;color:var(--suave)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:8px 0}
+.res .c{border:1px solid var(--borde);border-radius:8px;padding:8px 11px;background:#fff}
+.res .c .t{font-size:12px;color:var(--suave)}
+.res .c .v{font-size:15.5px;font-weight:650;color:var(--navy)}
+.dec{display:inline-block;font-size:12px;font-weight:650;border-radius:5px;padding:1px 7px}
+.dec.si{background:#FDE8E0;color:#9A3412}
+.dec.no{background:#E5E7EB;color:#374151}
+.hip{border:1px solid var(--borde);border-radius:8px;padding:10px 12px;background:#fff}
+.hip b{color:var(--navy)}
+.flujo{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+@media (max-width:980px){.flujo{grid-template-columns:1fr}}
+.paso{border-radius:9px;overflow:hidden;border:2px solid;background:#fff}
+.paso .cab{color:#fff;font-weight:700;font-size:13.5px;padding:7px 10px}
+.paso ul{margin:8px 0 10px;padding-left:24px;font-size:13px}
+.whatif-out{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px}
+.prob{font-size:54px;font-weight:750;color:var(--naranjo);line-height:1.05;font-variant-numeric:tabular-nums}
+.prob-ic{font-size:14px;color:var(--suave);margin-top:4px}
+.medidor{width:100%;height:14px;border-radius:999px;background:#E5E7EB;position:relative;margin:14px 0 4px;overflow:visible}
+.medidor .barra{height:100%;border-radius:999px;background:linear-gradient(90deg,#F59E0B,var(--naranjo))}
+.medidor .marca{position:absolute;top:-5px;width:2px;height:24px;background:var(--navy)}
+.medidor .ic{position:absolute;top:3px;height:8px;background:rgba(27,54,93,.35);border-radius:4px}
+.ctrl-wi{display:grid;gap:12px}
+.ctrl-wi label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--suave)}
+.ctrl-wi select{width:100%}
+.mini{font-size:12.5px;color:var(--suave)}
+.indice td:first-child{white-space:nowrap;font-weight:600}
+.indice a{cursor:pointer}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;background:#E8F0FA;color:var(--azul);font-size:12px;font-weight:600}
+footer{max-width:1320px;margin:0 auto;padding:0 20px 30px;font-size:12.5px;color:var(--gris)}
+.oculto{display:none !important}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Estadía hospitalaria prolongada en Chile</h1>
+  <p>Factores asociados y estimación de su probabilidad con regresión logística · Antonio Freyle · Ignacia Sáez</p>
+</header>
+<nav class="tabs" id="tabs">
+  <button data-tab="portada" class="activo">1. Portada</button>
+  <button data-tab="exploracion">2. Exploración</button>
+  <button data-tab="relaciones">3. Relaciones y tests</button>
+  <button data-tab="diagnosticos">4. Diagnósticos</button>
+  <button data-tab="modelo">5. Modelo</button>
+  <button data-tab="whatif">6. Simulación <i>what if</i></button>
+  <button data-tab="conclusiones">7. Conclusiones</button>
+</nav>
+<main>
+
+<!-- ===================================================================== -->
+<section class="tab activo" id="portada">
+  <h2>Problema y pregunta de investigación</h2>
+  <div class="kpis" id="kpis-portada"></div>
+  <div class="grid g2">
+    <div class="tarjeta">
+      <h3>Contexto</h3>
+      <p>La disponibilidad de camas es una restricción central de la red hospitalaria chilena. Las estadías largas consumen una parte desproporcionada de los días-cama: la estadía media (<span data-k="media"></span> días) triplica la mediana (<span data-k="mediana"></span> días). Este estudio operacionaliza el fenómeno como <b>estadía hospitalaria prolongada (EHP)</b>: un egreso cuya estadía supera el percentil 75 de la base limpia (<b>P75 = 6 días</b>), una decisión operacional y no un estándar clínico.</p>
+      <p style="margin-bottom:0"><b>Pregunta.</b> ¿Se asocian el grupo etario, el sistema de previsión de salud y la pertenencia del establecimiento al SNSS con la probabilidad de que un egreso hospitalario en Chile presente una estadía prolongada (&gt; 6 días), una vez ajustado por sexo y por el capítulo CIE-10 del diagnóstico principal?</p>
+      <p class="mini" style="margin:8px 0 0">Objetivo secundario: caracterizar la relación bivariada de esas variables con la duración de la estadía en días.</p>
+    </div>
+    <div class="tarjeta">
+      <h3>Hipótesis (pruebas bilaterales, α = 0,05)</h3>
+      <div class="grid" style="gap:8px">
+        <div class="hip"><b>Edad.</b> H<sub>0,1</sub>: β<sub>edad</sub> = 0 (10 coeficientes) frente a H<sub>1,1</sub>: β<sub>edad</sub> ≠ 0. Se espera mayor chance desde los 60 años.</div>
+        <div class="hip"><b>Previsión.</b> H<sub>0,2</sub>: β<sub>previsión</sub> = 0 (5 coeficientes) frente a H<sub>1,2</sub>: β<sub>previsión</sub> ≠ 0. Se espera mayor chance en FONASA que en ISAPRE.</div>
+        <div class="hip"><b>Red.</b> H<sub>0,3</sub>: β<sub>SNSS</sub> = 0 frente a H<sub>1,3</sub>: β<sub>SNSS</sub> ≠ 0. Se espera mayor chance en el SNSS.</div>
+      </div>
+      <p class="mini" style="margin:8px 0 0"><b>Diagnóstico de ingreso.</b> DIAG1 se registra al egreso; en este estudio se asume como la condición de ingreso del paciente (motivo de la hospitalización).</p>
+    </div>
+  </div>
+
+  <h2>Diseño del estudio <span class="etq">Paper: Figura 1</span></h2>
+  <div class="flujo" id="flujo"></div>
+  <p class="fuente">Fuente: elaboración propia con datos del Departamento de Estadísticas e Información de Salud (DEIS, 2025).</p>
+
+  <h2>Datos y variables <span class="etq">Paper: Tabla 1</span></h2>
+  <div class="grid g2">
+    <div class="tarjeta">
+      <h3>De la base original a la muestra analizada</h3>
+      <div id="g-embudo" class="graf bajo"></div>
+      <p class="mini">Unidad de análisis: el egreso (alta o fallecimiento), no el paciente. Fuente: registro de egresos hospitalarios 2025, datos abiertos DEIS (MINSAL). El P75 se calculó sobre la base limpia completa; la muestra aleatoria simple usa semilla 42.</p>
+    </div>
+    <div class="tarjeta">
+      <h3>Variables del estudio</h3>
+      <div class="tabla-scroll" style="max-height:330px">
+      <table>
+        <tr><th>Variable</th><th>Rol</th><th>Tipo</th><th>Referencia en el modelo</th></tr>
+        <tr><td>DIAS_ESTADA</td><td>Respuesta secundaria</td><td>Numérica discreta</td><td>Solo en el análisis bivariado</td></tr>
+        <tr><td>ESTADIA_PROLONGADA</td><td>Respuesta principal</td><td>Binaria</td><td>1 si &gt; 6 días; 0 si no</td></tr>
+        <tr><td>GRUPO_EDAD</td><td>Explicativa (H<sub>1</sub>)</td><td>Ordinal, 11 tramos</td><td>Ref.: 30 a 39 años</td></tr>
+        <tr><td>GLOSA_PREVISION</td><td>Explicativa (H<sub>2</sub>)</td><td>Nominal, 6 categorías</td><td>Ref.: ISAPRE</td></tr>
+        <tr><td>PERTENENCIA_ESTABLECIMIENTO_SALU</td><td>Explicativa (H<sub>3</sub>)</td><td>Binaria</td><td>Ref.: No SNSS</td></tr>
+        <tr><td>SEXO</td><td>Control</td><td>Binaria</td><td>Ref.: hombre</td></tr>
+        <tr><td>DIAG1 (capítulo CIE-10)</td><td>Control clínico</td><td>Nominal, 21 categorías</td><td>Ref.: digestivo (el más frecuente)</td></tr>
+        <tr><td>EDAD_APROX</td><td>Auxiliar</td><td>Numérica aproximada</td><td>Marca de clase; solo para la linealidad (M2)</td></tr>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <h2>Dónde está cada figura y tabla del paper</h2>
+  <p class="sub">Todo lo que aparece en el paper puede encontrarse en este dashboard. Haz clic en la pestaña para ir a cada elemento.</p>
+  <div class="tarjeta"><div class="tabla-scroll" style="max-height:none"><table class="indice" id="indice"></table></div></div>
+</section>
+
+<!-- ===================================================================== -->
+<div class="filtros oculto" id="barra-filtros">
+  <label>Región de residencia<select id="f-reg"></select></label>
+  <label>Tramo de edad<select id="f-edad"></select></label>
+  <label>Sexo<select id="f-sexo"></select></label>
+  <label>Previsión<select id="f-prev"></select></label>
+  <label>Red del establecimiento<select id="f-red"></select></label>
+  <label>Capítulo CIE-10 <span class="mini">(solo % EHP)</span><select id="f-cap"></select></label>
+  <button class="btn" id="f-reset">Quitar filtros</button>
+  <div class="estado" id="f-estado"></div>
+</div>
+
+<section class="tab" id="exploracion">
+  <h2>Exploración de datos</h2>
+  <p class="sub">Distribuciones y descriptivos de la muestra (1.000.000 de egresos de 2025). Los filtros de arriba recalculan todos los gráficos de esta pestaña y de la pestaña de relaciones.</p>
+  <div class="kpis" id="kpis-exp"></div>
+
+  <div class="grid g2">
+    <div class="tarjeta">
+      <h3>Distribución de los días de estada <span class="etq">Paper: Figura D.1</span></h3>
+      <div id="g-hist" class="graf"></div>
+      <p class="fuente">Eje acotado al P99 de la muestra completa (51 días). La línea naranja marca el umbral de EHP (6 días).</p>
+    </div>
+    <div class="tarjeta">
+      <h3>Balance de la variable respuesta <span class="etq">Paper: Figura D.1</span></h3>
+      <div id="g-balance" class="graf"></div>
+      <p class="fuente">Como muchos egresos duran exactamente 6 días, la prevalencia global es 21,65 % y no 25 %.</p>
+    </div>
+  </div>
+
+  <h2>Porcentaje de egresos con EHP por grupo <span class="etq">Paper: Figura 2</span></h2>
+  <p class="sub">La línea punteada marca la tasa de EHP del subconjunto filtrado. Pasa el cursor sobre las barras para ver el número de egresos.</p>
+  <div class="grid g2">
+    <div class="tarjeta"><h3>Según tramo de edad</h3><div id="g-t-edad" class="graf"></div></div>
+    <div class="tarjeta"><h3>Según previsión</h3><div id="g-t-prev" class="graf"></div></div>
+    <div class="tarjeta"><h3>Según red del establecimiento</h3><div id="g-t-red" class="graf bajo"></div></div>
+    <div class="tarjeta"><h3>Según sexo</h3><div id="g-t-sexo" class="graf bajo"></div></div>
+  </div>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="tarjeta"><h3>Según capítulo CIE-10 del diagnóstico <span class="etq">Paper: Figura D.2</span></h3><div id="g-t-cap" class="graf muyalto"></div></div>
+    <div class="tarjeta"><h3>Según región de residencia <span class="etq n">Nuevo en el dashboard</span></h3><div id="g-t-reg" class="graf muyalto"></div></div>
+  </div>
+
+  <h2>Días de estada por grupo <span class="etq">Paper: Figura D.4</span></h2>
+  <div class="tarjeta">
+    <div class="fila-ctrl"><span class="lbl">Agrupar por:</span><div class="seg" id="seg-box"></div></div>
+    <div class="grid g2">
+      <div><div id="g-box" class="graf alto"></div><p class="fuente">Cajas calculadas con todos los egresos del subconjunto. El eje se acota al P95 de la muestra (21 días); el rombo marca la media.</p></div>
+      <div><div class="tabla-scroll" style="max-height:440px"><table id="t-desc"></table></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<section class="tab" id="relaciones">
+  <h2>Relaciones entre variables y tests estadísticos</h2>
+  <p class="sub">Como se rechazó la normalidad de los días de estada (pestaña Diagnósticos), se usan pruebas no paramétricas. Los resultados se recalculan en vivo para el subconjunto filtrado; sin filtros reproducen exactamente los del paper. Con n ≈ 10<sup>6</sup> casi todo resulta significativo, por lo que la lectura relevante es el <b>tamaño del efecto</b>.</p>
+  <div class="aviso oculto" id="aviso-filtro">Hay filtros activos: los tests de esta pestaña están recalculados para el subconjunto filtrado y no corresponden a los valores del paper.</div>
+
+  <h2>A. Edad y días de estada: correlación de Spearman</h2>
+  <div class="grid g2">
+    <div class="tarjeta">
+      <h3>Dispersión edad – días</h3>
+      <div id="g-scatter" class="graf"></div>
+      <p class="fuente">Submuestra fija de 5.000 egresos (≤ P99) con desplazamiento horizontal aleatorio, solo para visualizar; no cambia con los filtros.</p>
+    </div>
+    <div class="tarjeta">
+      <h3>Media y mediana de días por tramo de edad</h3>
+      <div id="g-media-edad" class="graf"></div>
+    </div>
+  </div>
+  <div class="tarjeta">
+    <h3>Resultado de la prueba</h3>
+    <p class="mini" style="margin:0">H<sub>0</sub>: ρ<sub>S</sub> = 0 (no hay asociación monótona entre la edad y los días) frente a H<sub>1</sub>: ρ<sub>S</sub> ≠ 0. Spearman se calcula sobre el orden de los 11 tramos de edad.</p>
+    <div class="res" id="res-spearman"></div>
+    <div class="interp" id="int-spearman"></div>
+  </div>
+
+  <h2>B. Días de estada según grupo: Levene, Mann–Whitney y Kruskal–Wallis</h2>
+  <div class="tarjeta">
+    <div class="fila-ctrl"><span class="lbl">Comparar los días de estada según:</span><div class="seg" id="seg-dias"></div></div>
+    <p class="mini" id="hip-dias" style="margin:0 0 6px"></p>
+    <div class="res" id="res-dias"></div>
+    <div class="grid g2">
+      <div><div id="g-box2" class="graf alto"></div></div>
+      <div id="cont-dunn">
+        <h3 id="tit-dunn">Post-hoc de Dunn (Bonferroni)</h3>
+        <div class="tabla-scroll" style="max-height:420px"><table id="t-dunn"></table></div>
+      </div>
+    </div>
+    <div class="interp" id="int-dias"></div>
+  </div>
+
+  <h2>C. Estadía prolongada según grupo: χ² de independencia y V de Cramér</h2>
+  <div class="tarjeta">
+    <div class="fila-ctrl"><span class="lbl">Variable:</span><div class="seg" id="seg-chi"></div></div>
+    <p class="mini" style="margin:0 0 6px">H<sub>0</sub>: la EHP es independiente de la variable (π<sub>ij</sub> = π<sub>i·</sub>π<sub>·j</sub>) frente a H<sub>1</sub>: existe asociación. En tablas 2×2 se aplica la corrección de Yates.</p>
+    <div class="res" id="res-chi"></div>
+    <div class="grid g2">
+      <div><div id="g-chi" class="graf alto"></div></div>
+      <div><div class="tabla-scroll" style="max-height:440px"><table id="t-chi"></table></div></div>
+    </div>
+    <div class="interp" id="int-chi"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h3>Diagnóstico principal por primera letra del código CIE-10 (variable de control)</h3>
+    <p class="mini" style="margin:0">Con los <span id="l-ncod"></span> códigos sin agrupar, el <span id="l-pct5"></span> % de las celdas tiene frecuencia esperada &lt; 5, por lo que la prueba se aplica sobre la primera letra (22 categorías). Muestra completa, sin filtros.</p>
+    <div class="res" id="res-letra"></div>
+    <div id="g-letra" class="graf"></div>
+  </div>
+
+  <h2>Tabla resumen de las pruebas bivariadas <span class="etq">Paper: Tabla 2</span></h2>
+  <div class="tarjeta">
+    <p class="mini" style="margin:0 0 8px">Calculada siempre con la muestra completa (n = 1.000.000; sexo: 999.991), sin filtros. Umbrales de Cohen (1988): |ρ|, |r<sub>rb</sub>| y V pequeños desde 0,1, moderados desde 0,3 y grandes desde 0,5; ε² pequeño desde 0,01, moderado desde 0,06 y grande desde 0,14.</p>
+    <div class="tabla-scroll" style="max-height:none"><table id="t-resumen"></table></div>
+  </div>
+
+  <h2>Hipótesis de cada contraste <span class="etq">Paper: Tabla B.1</span></h2>
+  <div class="tarjeta"><div class="tabla-scroll" style="max-height:none"><table id="t-b1"></table></div></div>
+</section>
+
+<!-- ===================================================================== -->
+<section class="tab" id="diagnosticos">
+  <h2>Supuesto de normalidad de los días de estada</h2>
+  <p class="sub">H<sub>0</sub>: X ∼ N(μ, σ²) frente a H<sub>1</sub>: X ≁ N(μ, σ²), sobre una submuestra aleatoria de n = 5.000 (el máximo para el que la aproximación del valor p de Shapiro–Wilk en scipy está validada).</p>
+  <div class="res" id="res-norm"></div>
+  <div class="grid g2">
+    <div class="tarjeta"><h3>Histograma frente a la curva normal <span class="etq">Paper: Figura D.3</span></h3><div id="g-norm-hist" class="graf"></div></div>
+    <div class="tarjeta"><h3>Gráfico Q-Q normal <span class="etq">Paper: Figura D.3</span></h3><div id="g-qq" class="graf"></div></div>
+  </div>
+  <div class="interp"><p>Las tres pruebas rechazan la normalidad: la distribución tiene una cola derecha extensa (asimetría de <span data-k="asimetria"></span>; media de <span data-k="media"></span> días frente a una mediana de <span data-k="mediana"></span>). Por eso las relaciones bivariadas se evalúan con pruebas basadas en rangos (Spearman, Mann–Whitney y Kruskal–Wallis con Dunn) y la estadía se modela como respuesta binaria (EHP) con regresión logística. La prueba de Levene, que compara la dispersión de los grupos, está en la pestaña de relaciones.</p></div>
+
+  <h2>Multicolinealidad (VIF)</h2>
+  <div class="tarjeta">
+    <div class="grid g2">
+      <div><div id="g-vif" class="graf alto"></div></div>
+      <div class="interp" style="margin-top:0" id="int-vif"></div>
+    </div>
+  </div>
+
+  <h2>Linealidad en el logit <span class="etq">Paper: Figura 3</span></h2>
+  <div class="grid g2">
+    <div class="tarjeta"><h3>Logit empírico por tramo frente al efecto lineal</h3><div id="g-lin" class="graf"></div></div>
+    <div class="tarjeta"><h3>OR ajustado por tramo de edad (IC 95 %)</h3><div id="g-or-edad" class="graf"></div></div>
+  </div>
+  <div class="interp" id="int-lin"></div>
+
+  <h2>Calibración y prueba de Hosmer–Lemeshow <span class="etq">Paper: Figura 4 y Tabla C.4</span></h2>
+  <div class="res" id="res-hl"></div>
+  <div class="grid g2">
+    <div class="tarjeta"><div id="g-calib" class="graf alto"></div></div>
+    <div class="tarjeta"><div class="tabla-scroll" style="max-height:440px"><table id="t-hl"></table></div></div>
+  </div>
+  <div class="interp" id="int-hl"></div>
+
+  <h2>Residuos, influencia y sobredispersión <span class="etq">Paper: Figura D.6</span></h2>
+  <p class="sub">Como todas las covariables son categóricas, el diagnóstico se hace por patrón de covariables (O<sub>j</sub> ∼ Bin(n<sub>j</sub>, p<sub>j</sub>)). El tamaño de cada punto es proporcional al número de egresos del patrón; pasa el cursor para ver el perfil.</p>
+  <div class="res" id="res-resid"></div>
+  <div class="grid g2">
+    <div class="tarjeta"><h3>Residuo de Pearson estandarizado por patrón</h3><div id="g-resid" class="graf alto"></div></div>
+    <div class="tarjeta"><h3>Apalancamiento y distancia de Cook</h3><div id="g-cook" class="graf alto"></div></div>
+  </div>
+  <div class="tarjeta">
+    <h3>Patrones más influyentes (mayor distancia de Cook)</h3>
+    <div class="tabla-scroll" style="max-height:none"><table id="t-cook"></table></div>
+  </div>
+
+  <h2>Análisis de sensibilidad <span class="etq">Paper: Tabla C.5</span></h2>
+  <div class="tarjeta">
+    <p class="mini" style="margin:0 0 8px">Errores estándar escalados por √φ̂ y modelo reestimado sin los patrones con distancia de Cook mayor que 1.</p>
+    <div class="tabla-scroll" style="max-height:none"><table id="t-sens"></table></div>
+    <div class="interp" id="int-sens"></div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<section class="tab" id="modelo">
+  <h2>Modelo de regresión logística</h2>
+  <p class="sub">logit(p<sub>i</sub>) = β<sub>0</sub> + Σ β<sub>k</sub>·Edad<sub>ki</sub> + β<sub>11</sub>·Mujer<sub>i</sub> + Σ β<sub>k</sub>·Previsión<sub>ki</sub> + β<sub>17</sub>·SNSS<sub>i</sub> + Σ β<sub>k</sub>·Capítulo<sub>ki</sub>, estimado por máxima verosimilitud (Newton–Raphson).</p>
+  <div class="kpis" id="kpis-modelo"></div>
+
+  <h2>Odds ratios ajustados <span class="etq">Paper: Figura D.5 y Tabla 3</span></h2>
+  <div class="tarjeta">
+    <div class="fila-ctrl">
+      <span class="lbl">Variables:</span><div class="seg" id="seg-forest"></div>
+      <span class="lbl" style="margin-left:10px">Intervalo:</span><div class="seg" id="seg-ic"></div>
+    </div>
+    <div id="g-forest" class="graf muyalto"></div>
+    <p class="fuente">Escala logarítmica. Referencias: 30 a 39 años, hombre, ISAPRE, No SNSS, capítulo digestivo. El IC escalado multiplica el error estándar por √φ̂ (sobredispersión).</p>
+  </div>
+  <div class="tarjeta">
+    <h3>Tabla de coeficientes (Wald)</h3>
+    <div class="tabla-scroll"><table id="t-coef"></table></div>
+    <div class="interp" id="int-coef"></div>
+  </div>
+
+  <h2>Contraste de las hipótesis: razón de verosimilitud <span class="etq">Paper: Tabla 4A y Figura 5</span></h2>
+  <div class="grid g2">
+    <div class="tarjeta">
+      <div class="fila-ctrl"><span class="lbl">Mostrar:</span><div class="seg" id="seg-g"></div></div>
+      <div id="g-ranking" class="graf"></div>
+    </div>
+    <div class="tarjeta">
+      <div class="tabla-scroll" style="max-height:none"><table id="t-lr"></table></div>
+      <p class="mini" id="lr-global"></p>
+    </div>
+  </div>
+  <div class="interp" id="int-lr"></div>
+
+  <h2>Comparación de modelos <span class="etq">Paper: Tabla 4B</span></h2>
+  <div class="grid g2">
+    <div class="tarjeta"><div id="g-modelos" class="graf"></div></div>
+    <div class="tarjeta"><div class="tabla-scroll" style="max-height:none"><table id="t-modelos"></table></div><div class="interp" id="int-modelos"></div></div>
+  </div>
+
+  <h2>Efectos crudos y ajustados</h2>
+  <div class="grid g2">
+    <div class="tarjeta"><h3>OR crudo frente a ajustado</h3><div id="g-crudo" class="graf alto"></div></div>
+    <div class="tarjeta"><h3>% de egresos atendidos en el SNSS, por previsión</h3><div id="g-pctsnss" class="graf alto"></div></div>
+  </div>
+  <div class="interp" id="int-crudo"></div>
+
+  <h2>Tasa de EHP y OR ajustado por capítulo CIE-10 <span class="etq">Paper: Tabla C.1</span></h2>
+  <div class="tarjeta"><div class="tabla-scroll"><table id="t-c1"></table></div></div>
+
+  <h2>Capacidad discriminativa <span class="etq">Paper: Figuras D.7 y D.8, Tabla 5</span></h2>
+  <div class="tarjeta">
+    <div class="fila-ctrl">
+      <span class="lbl">Punto de corte c:</span>
+      <input type="range" id="corte" min="0.01" max="0.9" step="0.001" style="width:280px">
+      <b id="corte-v" style="min-width:52px"></b>
+      <button class="btn" data-c="0.5">c = 0,5</button>
+      <button class="btn" data-c="prev">c = prevalencia</button>
+      <button class="btn prim" data-c="youden">c = Youden</button>
+    </div>
+    <div class="grid g3">
+      <div><div id="g-roc" class="graf alto"></div></div>
+      <div><div id="g-cm" class="graf alto"></div></div>
+      <div><div class="tabla-scroll" style="max-height:none"><table id="t-metricas"></table></div></div>
+    </div>
+  </div>
+  <div class="tarjeta">
+    <h3>Desempeño según el punto de corte</h3>
+    <div class="tabla-scroll" style="max-height:none"><table id="t-cortes"></table></div>
+    <div class="interp" id="int-roc"></div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<section class="tab" id="whatif">
+  <h2>Simulación <i>what if</i></h2>
+  <p class="sub">Elige un perfil de egreso y el modelo ajustado (M3) estima su probabilidad de estadía prolongada: p̂ = 1 / (1 + e<sup>−x'β̂</sup>), con un intervalo de confianza del 95 % obtenido por el método delta, x'β̂ ± 1,96·√(x'V̂x). Cambia una variable y observa cómo se mueve la probabilidad. Son asociaciones ajustadas, no efectos causales.</p>
+  <div class="fila-ctrl">
+    <span class="lbl">Perfiles de ejemplo:</span>
+    <button class="btn" data-preset="ref">Perfil de referencia</button>
+    <button class="btn" data-preset="mayor">Adulto mayor, SNSS, circulatorio</button>
+    <button class="btn" data-preset="parto">Parto en clínica (ISAPRE)</button>
+    <button class="btn" data-preset="mental">Trastorno mental, FONASA, SNSS</button>
+  </div>
+  <div class="grid" style="grid-template-columns:minmax(0,300px) minmax(0,1fr) minmax(0,1fr)" id="wi-grid">
+    <div class="tarjeta ctrl-wi">
+      <h3>Perfil del egreso</h3>
+      <label>Tramo de edad<select id="wi-edad"></select></label>
+      <label>Sexo<select id="wi-sexo"></select></label>
+      <label>Previsión<select id="wi-prev"></select></label>
+      <label>Red del establecimiento<select id="wi-red"></select></label>
+      <label>Capítulo CIE-10 del diagnóstico<select id="wi-cap"></select></label>
+      <label>Intervalo de confianza<select id="wi-ic"><option value="nom">Nominal (Wald)</option><option value="esc">Escalado por sobredispersión (√φ̂)</option></select></label>
+    </div>
+    <div class="tarjeta whatif-out">
+      <div class="mini">Probabilidad estimada de EHP (&gt; 6 días)</div>
+      <div class="prob" id="wi-p"></div>
+      <div class="prob-ic" id="wi-ic-txt"></div>
+      <div class="medidor" id="wi-medidor"><div class="barra" id="wi-barra"></div><div class="ic" id="wi-icbar"></div><div class="marca" id="wi-marca" title="Prevalencia global"></div></div>
+      <div class="mini" style="display:flex;justify-content:space-between;width:100%"><span>0 %</span><span>línea: prevalencia global 21,65 %</span><span>100 %</span></div>
+      <div class="res" id="wi-res" style="width:100%;margin-top:14px"></div>
+    </div>
+    <div class="tarjeta">
+      <h3>Comparar con otro escenario</h3>
+      <p class="mini" style="margin:0 0 8px">Guarda el perfil actual como escenario A, cambia alguna variable y compara.</p>
+      <button class="btn prim" id="wi-guardar">Guardar perfil actual como escenario A</button>
+      <div id="wi-comp" style="margin-top:12px"></div>
+    </div>
+  </div>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="tarjeta">
+      <h3>¿Qué pasa si cambia una variable?</h3>
+      <div class="fila-ctrl"><span class="lbl">Variar:</span><div class="seg" id="seg-wi"></div></div>
+      <div id="g-wi-var" class="graf alto"></div>
+      <p class="fuente">Las demás variables se mantienen en el perfil elegido. Los rombos muestran la proporción observada en los datos para ese mismo perfil (solo si tiene al menos 30 egresos).</p>
+    </div>
+    <div class="tarjeta">
+      <h3>Aporte de cada variable al logit</h3>
+      <div id="g-wi-aporte" class="graf alto"></div>
+      <p class="fuente">Coeficiente β̂ de cada categoría del perfil, frente a su categoría de referencia. Barras a la derecha aumentan la chance de EHP; a la izquierda, la reducen.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<section class="tab" id="conclusiones">
+  <h2>Contraste de las hipótesis</h2>
+  <div class="tarjeta"><div class="tabla-scroll" style="max-height:none"><table id="t-hip"></table></div></div>
+
+  <h2>Hallazgos principales</h2>
+  <div class="grid g2">
+    <div class="tarjeta">
+      <h3>Red asistencial (H<sub>1,3</sub>): el efecto más fuerte y estable</h3>
+      <p>Atenderse en el SNSS se asocia con odds de EHP <b>3,47 veces</b> mayores (IC 95 %: 3,41–3,53). El OR casi no cambia al ajustar (3,73 crudo), resiste el escalamiento por sobredispersión (3,29–3,65) y la exclusión de patrones influyentes (3,42), y coincide con el efecto moderado sobre los días (r<sub>rb</sub> = 0,425). La base no permite separar casuística no medida, gestión de camas y hospitalización social.</p>
+    </div>
+    <div class="tarjeta">
+      <h3>Edad (H<sub>1,1</sub>): gradiente creciente</h3>
+      <p>Ajustando por las demás variables, la chance crece desde la infancia hasta los 80 a 89 años (OR de 0,51 en 1 a 9 años a <b>2,76</b> en 80 a 89, frente a 30 a 39). La tasa alta de los menores de un año (31,0 %) se asocia casi por completo con su diagnóstico perinatal: su OR ajustado (0,97) no es significativo ni estable.</p>
+    </div>
+    <div class="tarjeta">
+      <h3>Previsión (H<sub>1,2</sub>): la brecha se explica por la red</h3>
+      <p>El OR de FONASA frente a ISAPRE baja de <b>3,25</b> (crudo) a <b>1,09</b> con solo ajustar por la red, porque el 76,6 % de los egresos FONASA ocurre en el SNSS, frente al 1,3 % de los de ISAPRE. El efecto propio de la previsión es significativo por el tamaño de la muestra, pero de magnitud práctica mínima.</p>
+    </div>
+    <div class="tarjeta">
+      <h3>Diagnóstico y ajuste del modelo</h3>
+      <p>El diagnóstico es la variable que más aporta al ajuste (G = 48.151,8), desde OR 0,36 (embarazo y parto) hasta 7,55 (trastornos mentales). El modelo discrimina de forma aceptable (AUC = 0,766) y coincide en promedio con la tasa real, pero tiene un ajuste limitado (R²<sub>McF</sub> = 0,149) y sobredispersión (φ̂ = 9,30): gran parte de la variación depende de la gravedad y las comorbilidades, que la base no registra.</p>
+    </div>
+  </div>
+
+  <h2>Implicancias</h2>
+  <div class="tarjeta">
+    <ul style="margin:0;padding-left:20px">
+      <li><b>Gestión de camas:</b> focalizar la planificación de altas en los egresos del SNSS, en los adultos de 60 años y más y en los diagnósticos de mayor riesgo (trastornos mentales, afecciones perinatales, infecciosas, piel y circulatorio), más que en la previsión del paciente.</li>
+      <li><b>Comparación entre hospitales:</b> comparar la estadía de dos establecimientos sin ajustar por edad y diagnóstico puede llevar a conclusiones erradas.</li>
+      <li><b>Política pública:</b> las diferencias de estadía entre FONASA e ISAPRE se explican sobre todo por la red en que se atiende cada grupo; las comparaciones de eficiencia deberían centrarse en la red, idealmente con datos GRD que permitan ajustar por gravedad.</li>
+    </ul>
+  </div>
+
+  <h2>Limitaciones y trabajo futuro</h2>
+  <div class="grid g2">
+    <div class="tarjeta">
+      <ul style="margin:0;padding-left:20px">
+        <li><b>Asociación, no causalidad:</b> los OR describen asociaciones ajustadas.</li>
+        <li><b>Independencia:</b> sin identificador de paciente ni de establecimiento; los intervalos pueden ser demasiado estrechos (φ̂ = 9,30).</li>
+        <li><b>Un solo año</b> (2025) y una muestra de 1.000.000 de egresos; el umbral de 6 días es el P75 de ese año.</li>
+        <li><b>Selección por limpieza:</b> se excluyó el 7,5 % de la base original (datos suprimidos y previsión desconocida).</li>
+      </ul>
+    </div>
+    <div class="tarjeta">
+      <ul style="margin:0;padding-left:20px">
+        <li><b>Sin gravedad ni comorbilidad</b>, y el diagnóstico agrupado en 21 capítulos.</li>
+        <li><b>Modelo aditivo</b>, sin interacciones (por ejemplo, previsión × red); grupos pequeños con estimaciones menos precisas.</li>
+        <li><b>Binarización:</b> el umbral es global (6 días es prolongado para un parto, no para un ACV).</li>
+        <li><b>Futuro:</b> datos GRD para definir la EHP respecto de la estadía esperada y un modelo multinivel por hospital.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="interp"><p><b>Conclusión.</b> El grupo etario, la previsión y la pertenencia al SNSS se asocian con la probabilidad de EHP aun después de ajustar por sexo y diagnóstico, por lo que se rechazan las tres hipótesis nulas. Pero la magnitud y la estabilidad son muy distintas: la red y la edad tienen efectos grandes y estables, mientras que la previsión tiene un efecto propio mínimo, porque la brecha bruta entre FONASA e ISAPRE se explica casi por completo por el lugar de atención.</p></div>
+</section>
+</main>
+<footer>Fuente de datos: Departamento de Estadísticas e Información de Salud (2025), Egresos hospitalarios, Datos Abiertos del Gobierno de Chile.</footer>
+
+<script>/*__PLOTLY__*/</script>
+<script>
+"use strict";
+const D = /*__DATOS__*/null;
+
+// =====================================================================
+// Utilidades numéricas: distribuciones para los valores p
+// =====================================================================
+function lgamma(x){const c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(x<0.5)return Math.log(Math.PI/Math.sin(Math.PI*x))-lgamma(1-x);x-=1;let a=c[0];const t=x+7.5;for(let i=1;i<9;i++)a+=c[i]/(x+i);return 0.5*Math.log(2*Math.PI)+(x+0.5)*Math.log(t)-t+Math.log(a);}
+function gammq(a,x){if(x<=0)return 1;const lf=-x+a*Math.log(x)-lgamma(a);
+  if(x<a+1){let s=1/a,d=s,ap=a;for(let n=0;n<5000;n++){ap+=1;d*=x/ap;s+=d;if(Math.abs(d)<Math.abs(s)*1e-15)break;}return Math.max(0,1-s*Math.exp(lf));}
+  let b=x+1-a,c=1e300,d=1/b,h=d;for(let i=1;i<5000;i++){const an=-i*(i-a);b+=2;d=an*d+b;if(Math.abs(d)<1e-300)d=1e-300;c=b+an/c;if(Math.abs(c)<1e-300)c=1e-300;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<1e-15)break;}return Math.exp(lf)*h;}
+function betacf(a,b,x){const qab=a+b,qap=a+1,qam=a-1;let c=1,d=1-qab*x/qap;if(Math.abs(d)<1e-300)d=1e-300;d=1/d;let h=d;
+  for(let m=1;m<=5000;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<1e-300)d=1e-300;c=1+aa/c;if(Math.abs(c)<1e-300)c=1e-300;d=1/d;h*=d*c;
+  aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<1e-300)d=1e-300;c=1+aa/c;if(Math.abs(c)<1e-300)c=1e-300;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<1e-15)break;}return h;}
+function betai(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+const chi2sf=(x,k)=>x<=0?1:gammq(k/2,x/2);
+const fsf=(F,d1,d2)=>F<=0?1:betai(d2/2,d1/2,d2/(d2+d1*F));
+const t2sf=(t,df)=>betai(df/2,0.5,df/(df+t*t));
+const normsf=z=>z>=0?0.5*gammq(0.5,z*z/2):1-0.5*gammq(0.5,z*z/2);
+const chi2ppf95={1:3.841,2:5.991,3:7.815,4:9.488,5:11.07,6:12.59,7:14.07,8:15.51,9:16.92,10:18.31,20:31.41,21:32.67};
+const expit=x=>1/(1+Math.exp(-x));
+
+// =====================================================================
+// Formato (decimales con coma, como en el paper)
+// =====================================================================
+const NF={};
+function fmt(x,d=2){if(x===null||x===undefined||!isFinite(x))return "–";const k=d;if(!NF[k])NF[k]=new Intl.NumberFormat("es-CL",{minimumFractionDigits:d,maximumFractionDigits:d});return NF[k].format(x);}
+const fint=x=>fmt(x,0);
+const fpct=(x,d=1)=>fmt(x,d)+" %";
+function fp(p){if(p===null||p===undefined||!isFinite(p))return "–";return p<0.001?"< 0,001":fmt(p,3);}
+function fsci(x,d=2){if(!isFinite(x))return "–";if(x===0)return "0";const e=Math.floor(Math.log10(Math.abs(x)));if(Math.abs(e)<5)return fmt(x,d);return fmt(x/Math.pow(10,e),d)+" × 10<sup>"+e+"</sup>";}
+function magn(v,cortes=[0.1,0.3,0.5]){const a=Math.abs(v);return a<cortes[0]?"muy pequeña":a<cortes[1]?"pequeña":a<cortes[2]?"moderada":"grande";}
+const CE2=[0.01,0.06,0.14];
+const decision=p=>p<0.05?'<span class="dec si">Se rechaza H₀</span>':'<span class="dec no">No se rechaza H₀</span>';
+const $=id=>document.getElementById(id);
+function card(t,v){return `<div class="c"><div class="t">${t}</div><div class="v">${v}</div></div>`;}
+
+// =====================================================================
+// Plotly: estilo común
+// =====================================================================
+const C={navy:"#1B365D",azul:"#1D4E89",azul2:"#2E5B88",celeste:"#A6CEE3",nar:"#B5400B",nar2:"#E07B39",verde:"#2E7D32",morado:"#6B3FA0",gris:"#6B7280",gris2:"#9CA3AF"};
+const CFG={displaylogo:false,responsive:true,modeBarButtonsToRemove:["lasso2d","select2d","autoScale2d"],toImageButtonOptions:{format:"png",scale:2}};
+function merge(a,b){const o=Array.isArray(a)?[...a]:{...a};for(const k in b){if(b[k]&&typeof b[k]==="object"&&!Array.isArray(b[k])&&a[k]&&typeof a[k]==="object")o[k]=merge(a[k],b[k]);else o[k]=b[k];}return o;}
+const BASE={separators:",.",font:{family:'system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif',size:12,color:"#1F2937"},paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",
+  margin:{l:60,r:18,t:16,b:48},xaxis:{gridcolor:"#E5E7EB",zeroline:false,automargin:true,linecolor:"#CBD2DC"},yaxis:{gridcolor:"#E5E7EB",zeroline:false,automargin:true,linecolor:"#CBD2DC"},
+  legend:{orientation:"h",y:-0.18,x:0},hoverlabel:{font:{size:12}},bargap:0.25};
+function plot(id,tr,lay){// copia profunda del estilo base: Plotly modifica el layout que recibe
+  const L=merge(JSON.parse(JSON.stringify(BASE)),lay||{});
+  for(const k of Object.keys(L))if(/^[xy]axis/.test(k)&&typeof L[k].title==="string")L[k].title={text:L[k].title};// Plotly 4: title es un objeto
+  Plotly.react(id,tr,L,CFG);}
+
+// =====================================================================
+// Datos: categorías, cubos y filtros
+// =====================================================================
+const CAT=D.categorias;
+const DIM_NOM={reg:"Región",edad:"Tramo de edad",sexo:"Sexo",prev:"Previsión",red:"Red",cap:"Capítulo CIE-10"};
+const F={reg:-1,edad:-1,sexo:-1,prev:-1,red:-1,cap:-1};
+const A=D.cubo_a, LA=A.n.length;
+const B=D.cubo_b, LB=B.reg.length;
+const colaPorCelda=Array.from({length:LB},()=>[]);
+for(const [c,v,k] of B.cola)colaPorCelda[c].push([v,k]);
+const filtrosActivos=()=>Object.keys(F).some(k=>F[k]>=0);
+function pasaA(i,ign){for(const k of ["reg","edad","sexo","prev","red","cap"]){if(k===ign)continue;if(F[k]>=0&&A[k][i]!==F[k])return false;}return true;}
+function pasaB(i,ign){for(const k of ["reg","edad","sexo","prev","red"]){if(k===ign)continue;if(F[k]>=0&&B[k][i]!==F[k])return false;}return true;}
+
+// Agrega el cubo A por una dimensión: n, EHP y suma de días
+function aggA(dim){const k=CAT[dim].length,n=new Array(k).fill(0),e=new Array(k).fill(0),s=new Array(k).fill(0);
+  for(let i=0;i<LA;i++){if(!pasaA(i))continue;const g=A[dim][i];n[g]+=A.n[i];e[g]+=A.e[i];s[g]+=A.s[i];}return {n,e,s};}
+function totA(){let n=0,e=0,s=0;for(let i=0;i<LA;i++){if(!pasaA(i))continue;n+=A.n[i];e+=A.e[i];s+=A.s[i];}return {n,e,s};}
+function totA_sinFiltro(dim){const k=CAT[dim].length,n=new Array(k).fill(0),e=new Array(k).fill(0);for(let i=0;i<LA;i++){const g=A[dim][i];n[g]+=A.n[i];e[g]+=A.e[i];}return {n,e};}
+
+// Distribución de frecuencias exacta de los días por grupo (cubo B)
+// Devuelve, por categoría, un Map valor -> frecuencia
+function freqB(dim,sinFiltros){const k=dim?CAT[dim].length:1;const dens=Array.from({length:k},()=>new Float64Array(60));const colas=Array.from({length:k},()=>new Map());
+  for(let i=0;i<LB;i++){if(!sinFiltros&&!pasaB(i))continue;const g=dim?B[dim][i]:0;const h=B.h[i],d=dens[g];for(let j=0;j<60;j++)d[j]+=h[j];
+    for(const [v,c] of colaPorCelda[i])colas[g].set(v,(colas[g].get(v)||0)+c);}
+  return dens.map((d,g)=>{const vals=[],cnts=[];for(let j=0;j<60;j++)if(d[j]>0){vals.push(j+1);cnts.push(d[j]);}
+    const extra=[...colas[g].entries()].sort((a,b)=>a[0]-b[0]);for(const [v,c] of extra){vals.push(v);cnts.push(c);}
+    let n=0,s=0;for(let j=0;j<cnts.length;j++){n+=cnts[j];s+=cnts[j]*vals[j];}return {vals,cnts,n,mean:n?s/n:NaN};});}
+function cuantil(f,q){if(!f.n)return NaN;const h=(f.n-1)*q,lo=Math.floor(h),hi=Math.ceil(h);const vlo=valEnPos(f,lo),vhi=hi===lo?vlo:valEnPos(f,hi);return vlo+(vhi-vlo)*(h-lo);}
+function valEnPos(f,pos){let acc=0;for(let j=0;j<f.vals.length;j++){acc+=f.cnts[j];if(pos<acc)return f.vals[j];}return f.vals[f.vals.length-1];}
+function mediana(f){if(!f.n)return NaN;if(f.n%2===1)return valEnPos(f,(f.n-1)/2);return (valEnPos(f,f.n/2-1)+valEnPos(f,f.n/2))/2;}
+function cajas(f){const q1=cuantil(f,0.25),q2=cuantil(f,0.5),q3=cuantil(f,0.75),iqr=q3-q1;let lf=Infinity,uf=-Infinity;
+  for(let j=0;j<f.vals.length;j++){const v=f.vals[j];if(v>=q1-1.5*iqr&&v<lf)lf=v;if(v<=q3+1.5*iqr&&v>uf)uf=v;}return {q1,q2,q3,lf,uf,mean:f.mean};}
+function fusionar(fs){const m=new Map();for(const f of fs)for(let j=0;j<f.vals.length;j++)m.set(f.vals[j],(m.get(f.vals[j])||0)+f.cnts[j]);
+  const e=[...m.entries()].sort((a,b)=>a[0]-b[0]);const vals=e.map(x=>x[0]),cnts=e.map(x=>x[1]);let n=0,s=0;for(let j=0;j<cnts.length;j++){n+=cnts[j];s+=cnts[j]*vals[j];}return {vals,cnts,n,mean:n?s/n:NaN};}
+
+// =====================================================================
+// Pruebas no paramétricas exactas a partir de tablas de frecuencias
+// =====================================================================
+function rangos(grupos){// rangos medios conjuntos; devuelve funcion valor->rango medio y corrección por empates
+  const pool=fusionar(grupos);const rm=new Map();let acc=0,ties=0;
+  for(let j=0;j<pool.vals.length;j++){const t=pool.cnts[j];rm.set(pool.vals[j],acc+(t+1)/2);acc+=t;ties+=t*t*t-t;}return {rm,ties,N:pool.n};}
+function sumaRangos(f,rm){let R=0;for(let j=0;j<f.vals.length;j++)R+=f.cnts[j]*rm.get(f.vals[j]);return R;}
+function kruskal(grupos){const g=grupos.filter(f=>f.n>0);const {rm,ties,N}=rangos(g);let s=0;const Rm=[];
+  for(const f of g){const R=sumaRangos(f,rm);s+=R*R/f.n;Rm.push(R/f.n);}const Cc=1-ties/(N*N*N-N);
+  const H=(12/(N*(N+1))*s-3*(N+1))/Cc;return {H,gl:g.length-1,p:chi2sf(H,g.length-1),eps2:H/(N-1),N,Rm};}
+function mannU(a,b){// U del primer grupo (como scipy), con empates contados como medio caso
+  let U=0,cumB=0,ib=0;const bm=new Map();for(let j=0;j<b.vals.length;j++)bm.set(b.vals[j],b.cnts[j]);
+  const bv=b.vals,bc=b.cnts;let menores=0,k=0;
+  for(let j=0;j<a.vals.length;j++){const v=a.vals[j];while(k<bv.length&&bv[k]<v){menores+=bc[k];k++;}const ig=bm.get(v)||0;U+=a.cnts[j]*(menores+0.5*ig);}return U;}
+function mannWhitney(a,b){const {ties,N}=rangos([a,b]);const n1=a.n,n2=b.n;const U=mannU(a,b);const mu=n1*n2/2;
+  const s=Math.sqrt(n1*n2/12*((N+1)-ties/(N*(N-1))));const z=(U-mu-0.5*Math.sign(U-mu))/s;const theta=U/(n1*n2);return {U,z,p:2*normsf(Math.abs(z)),theta,rrb:2*theta-1};}
+function levene(grupos){const g=grupos.filter(f=>f.n>0);const k=g.length;let N=0;const zm=[],nn=[];const meds=g.map(mediana);
+  let tot=0;g.forEach((f,i)=>{let s=0;for(let j=0;j<f.vals.length;j++)s+=f.cnts[j]*Math.abs(f.vals[j]-meds[i]);zm.push(s/f.n);nn.push(f.n);N+=f.n;tot+=s;});
+  const zbar=tot/N;let num=0,den=0;g.forEach((f,i)=>{num+=nn[i]*(zm[i]-zbar)**2;for(let j=0;j<f.vals.length;j++){const z=Math.abs(f.vals[j]-meds[i]);den+=f.cnts[j]*(z-zm[i])**2;}});
+  const W=(N-k)/(k-1)*num/den;return {W,p:fsf(W,k-1,N-k),d1:k-1,d2:N-k};}
+function dunn(grupos,nombres){const idx=grupos.map((f,i)=>i).filter(i=>grupos[i].n>0);const g=idx.map(i=>grupos[i]);const {rm,ties,N}=rangos(g);
+  const s2=N*(N+1)/12-ties/(12*(N-1));const Rm=g.map(f=>sumaRangos(f,rm)/f.n);const orden=g.map((f,i)=>i).sort((a,b)=>Rm[b]-Rm[a]);
+  const m=g.length*(g.length-1)/2;const filas=[];
+  for(let x=0;x<orden.length;x++)for(let y=x+1;y<orden.length;y++){const a=orden[x],b=orden[y];const z=(Rm[a]-Rm[b])/Math.sqrt(s2*(1/g[a].n+1/g[b].n));
+    const p=Math.min(1,m*2*normsf(Math.abs(z)));const rrb=2*mannU(g[a],g[b])/(g[a].n*g[b].n)-1;filas.push({a:nombres[idx[a]],b:nombres[idx[b]],ra:Rm[a],rb:Rm[b],z,p,rrb});}
+  return filas;}
+function spearmanEdad(fEdad){// fEdad: frecuencias de días por tramo de edad (orden cronológico)
+  const nE=fEdad.map(f=>f.n);const N=nE.reduce((a,b)=>a+b,0);const rx=[];let acc=0;for(const n of nE){rx.push(acc+(n+1)/2);acc+=n;}
+  const {rm}=rangos(fEdad);const m=(N+1)/2;let sxy=0,sxx=0,syy=0;
+  fEdad.forEach((f,i)=>{for(let j=0;j<f.vals.length;j++){const ry=rm.get(f.vals[j]),c=f.cnts[j];sxy+=c*(rx[i]-m)*(ry-m);sxx+=c*(rx[i]-m)**2;syy+=c*(ry-m)**2;}});
+  const rho=sxy/Math.sqrt(sxx*syy);const t=rho*Math.sqrt((N-2)/(1-rho*rho));return {rho,p:t2sf(t,N-2),N};}
+function chi2Tabla(tab){// tab: filas [normal, ehp]
+  const t=tab.filter(r=>r[0]+r[1]>0);const R=t.map(r=>r[0]+r[1]);const Cc=[0,1].map(j=>t.reduce((s,r)=>s+r[j],0));const N=R.reduce((a,b)=>a+b,0);
+  const gl=(t.length-1);let X2=0,emin=Infinity;const E=t.map((r,i)=>[R[i]*Cc[0]/N,R[i]*Cc[1]/N]);
+  t.forEach((r,i)=>[0,1].forEach(j=>{const e=E[i][j];emin=Math.min(emin,e);let o=r[j];if(gl===1){const d=e-o;o=o+Math.min(0.5,Math.abs(d))*Math.sign(d);}X2+=(o-e)**2/e;}));
+  return {X2,gl,p:chi2sf(X2,gl),V:Math.sqrt(X2/(N*1)),emin,E,N};}
+
+// =====================================================================
+// Navegación por pestañas
+// =====================================================================
+const renderizado={};
+const RENDER={portada:renderPortada,exploracion:renderExploracion,relaciones:renderRelaciones,diagnosticos:renderDiagnosticos,modelo:renderModelo,whatif:renderWhatIf,conclusiones:renderConclusiones};
+let sucio={exploracion:true,relaciones:true};
+function irA(tab,ancla){document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("activo",b.dataset.tab===tab));
+  document.querySelectorAll("section.tab").forEach(s=>s.classList.toggle("activo",s.id===tab));
+  $("barra-filtros").classList.toggle("oculto",!(tab==="exploracion"||tab==="relaciones"));
+  if(tab==="exploracion"||tab==="relaciones"){$("barra-filtros").parentNode.insertBefore($("barra-filtros"),$(tab));}
+  const primeraVez=!renderizado[tab];if(primeraVez||sucio[tab]){RENDER[tab]();renderizado[tab]=true;if(tab in sucio)sucio[tab]=false;}
+  requestAnimationFrame(()=>{document.querySelectorAll("#"+tab+" .js-plotly-plot").forEach(g=>Plotly.Plots.resize(g));});
+  if(ancla){const el=$(ancla);if(el)setTimeout(()=>el.scrollIntoView({behavior:"smooth",block:"start"}),60);}else window.scrollTo({top:0});
+  try{history.replaceState(null,"","#"+tab);}catch(e){}}
+document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>irA(b.dataset.tab)));
+function seg(id,opciones,activo,alCambiar){const el=$(id);el.innerHTML=opciones.map(o=>`<button data-v="${o[0]}" class="${o[0]===activo?"activo":""}">${o[1]}</button>`).join("");
+  el.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{el.querySelectorAll("button").forEach(x=>x.classList.toggle("activo",x===b));alCambiar(b.dataset.v);}));}
+
+// =====================================================================
+// 1. PORTADA
+// =====================================================================
+function renderPortada(){const R=D.resumen;
+  document.querySelectorAll("[data-k]").forEach(el=>{const k=el.dataset.k;el.textContent=k==="mediana"?fmt(R[k],0):fmt(R[k],2);});
+  $("kpis-portada").innerHTML=[["Registros en la base original",fint(R.n_original)],["Muestra analizada (semilla 42)",fint(R.n_muestra)],["Umbral de EHP (P75)",fint(R.p75)+" días"],
+    ["Prevalencia de EHP",fpct(R.prop_ehp,2)],["OR ajustado SNSS vs. No SNSS",fmt(Math.exp(D.modelo.beta[D.modelo.nombres.indexOf("RED_SNSS")]),2)],["AUC del modelo",fmt(D.roc.auc,3)]]
+    .map((x,i)=>`<div class="kpi ${i>=3?"acento":""}"><div class="v">${x[1]}</div><div class="l">${x[0]}</div></div>`).join("");
+  const pasos=[["1. Problema",C.navy,"#EBF2FA",["Uso de camas y estadías prolongadas","EHP: estada &gt; P75 (6 días)","Pregunta e hipótesis H<sub>0,1</sub>–H<sub>0,3</sub>"]],
+    ["2. Datos","#006666","#E6F4F1",["Egresos DEIS 2025","Unidad: egreso","1.705.514 → 1.576.792 → muestra de 10<sup>6</sup>"]],
+    ["3. Procesamiento",C.azul2,"#EDF4FC",["Limpieza y capítulos CIE-10","Normalidad: SW, Lilliefors, AD","Pruebas de rangos y χ² con tamaño del efecto"]],
+    ["4. Modelado",C.morado,"#F3EBF9",["Regresión logística (MV)","Edad por tramos","OR e IC 95 %","Razón de verosimilitud"]],
+    ["5. Evaluación","#B84A39","#FDF0ED",["AIC, BIC, R² McFadden","Hosmer–Lemeshow","Residuos, Cook, φ̂","ROC, AUC, Youden"]]];
+  $("flujo").innerHTML=pasos.map(p=>`<div class="paso" style="border-color:${p[1]};background:${p[2]}"><div class="cab" style="background:${p[1]}">${p[0]}</div><ul>${p[3].map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+  plot("g-embudo",[{type:"bar",orientation:"h",y:["Base original","Tras limpieza","Muestra aleatoria","Modelo (sin sexo indeterminado)"].reverse(),
+    x:[R.n_original,R.n_limpio,R.n_muestra,R.n_modelo].reverse(),marker:{color:[C.gris2,C.azul2,C.azul,C.navy].reverse()},
+    text:[R.n_original,R.n_limpio,R.n_muestra,R.n_modelo].reverse().map(fint),textposition:"auto",hovertemplate:"%{y}: %{x:,.0f} egresos<extra></extra>"}],
+    {margin:{l:10,r:10,t:6,b:30},xaxis:{title:"Egresos"},showlegend:false});
+  const idx=[["Figura 1","Diagrama metodológico","portada","flujo"],["Tabla 1","Variables del estudio","portada","g-embudo"],
+    ["Figura 2","% de EHP según edad, previsión, red y sexo (con filtros)","exploracion","g-t-edad"],["Figura D.1","Distribución de los días y balance de la respuesta","exploracion","g-hist"],
+    ["Figura D.2","% de EHP por capítulo CIE-10","exploracion","g-t-cap"],["Figura D.4","Días de estada por red y por previsión (cajas)","exploracion","g-box"],
+    ["Tabla 2","Pruebas de asociación bivariada","relaciones","t-resumen"],["Tablas C.2 y C.3","Días por previsión y por edad, post-hoc de Dunn","relaciones","t-dunn"],
+    ["Tabla B.1","Hipótesis de cada contraste","relaciones","t-b1"],["Figura D.3","Histograma y Q-Q normal (normalidad)","diagnosticos","g-norm-hist"],
+    ["Figura 3","Linealidad en el logit y OR por tramo de edad","diagnosticos","g-lin"],["Figura 4 y Tabla C.4","Calibración y Hosmer–Lemeshow","diagnosticos","g-calib"],
+    ["Figura D.6","Residuos y distancia de Cook por patrón","diagnosticos","g-resid"],["Tabla C.5","Análisis de sensibilidad","diagnosticos","t-sens"],
+    ["Tabla 3 y Figura D.5","Odds ratios ajustados","modelo","g-forest"],["Tabla 4 y Figura 5","Razón de verosimilitud, ranking y comparación de modelos","modelo","g-ranking"],
+    ["Tabla C.1","Tasa de EHP y OR por capítulo CIE-10","modelo","t-c1"],["Figuras D.7, D.8 y Tabla 5","Curva ROC, matriz de confusión y cortes","modelo","g-roc"],
+    ["Nuevo","Simulación what if con el modelo ajustado","whatif","wi-grid"]];
+  const nomTab={portada:"1. Portada",exploracion:"2. Exploración",relaciones:"3. Relaciones y tests",diagnosticos:"4. Diagnósticos",modelo:"5. Modelo",whatif:"6. Simulación what if"};
+  $("indice").innerHTML="<tr><th>Elemento del paper</th><th>Contenido</th><th>Dónde está</th></tr>"+idx.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td><td><a data-tab="${x[2]}" data-ancla="${x[3]}">${nomTab[x[2]]}</a></td></tr>`).join("");
+  $("indice").querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>irA(a.dataset.tab,a.dataset.ancla)));}
+
+// =====================================================================
+// Filtros
+// =====================================================================
+function initFiltros(){for(const k of Object.keys(F)){const sel=$("f-"+k);let ops=CAT[k].map((c,i)=>[i,c]);
+    if(k==="sexo")ops=ops.slice(0,2);sel.innerHTML=`<option value="-1">Todas</option>`+ops.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join("");
+    sel.addEventListener("change",()=>{F[k]=+sel.value;cambiarFiltros();});}
+  $("f-reset").addEventListener("click",()=>{for(const k of Object.keys(F)){F[k]=-1;$("f-"+k).value="-1";}cambiarFiltros();});}
+function cambiarFiltros(){sucio.exploracion=true;sucio.relaciones=true;const act=document.querySelector("section.tab.activo").id;if(act in sucio){RENDER[act]();sucio[act]=false;}}
+function estadoFiltros(){const t=totA();const pct=t.n/D.resumen.n_muestra*100;
+  $("f-estado").innerHTML=(filtrosActivos()?`<b>${fint(t.n)}</b> egresos (${fpct(pct)} de la muestra)`:`<b>${fint(t.n)}</b> egresos · sin filtros`)+
+    (F.cap>=0?`<br><span style="color:#B5400B">El capítulo filtra solo los % de EHP y el χ²; los días usan los demás filtros.</span>`:"");
+  $("aviso-filtro").classList.toggle("oculto",!filtrosActivos());return t;}
+function fDias(dim){// frecuencias de días por categoría con los filtros (el filtro de capítulo no aplica a los días)
+  return freqB(dim);}
+
+// =====================================================================
+// 2. EXPLORACIÓN
+// =====================================================================
+let boxDim="red";
+function barrasTasa(id,dim,opts={}){const g=aggA(dim);let cats=CAT[dim].map((c,i)=>({c,i,n:g.n[i],t:g.n[i]?g.e[i]/g.n[i]*100:NaN})).filter(x=>x.n>0);
+  if(dim==="sexo")cats=cats.filter(x=>x.i<2);if(opts.ordenar)cats.sort((a,b)=>a.t-b.t);const tot=totA();const tg=tot.e/tot.n*100;
+  const h=opts.horiz!==false;const tr={type:"bar",orientation:h?"h":"v",[h?"y":"x"]:cats.map(x=>x.c),[h?"x":"y"]:cats.map(x=>x.t),
+    marker:{color:cats.map(x=>x.t>=tg?C.nar:C.azul)},text:cats.map(x=>fpct(x.t)),textposition:"outside",cliponaxis:false,
+    customdata:cats.map(x=>[fint(x.n)]),hovertemplate:"%{"+(h?"y":"x")+"}<br>% EHP: %{"+(h?"x":"y")+":.1f} %<br>Egresos: %{customdata[0]}<extra></extra>"};
+  const linea={type:"line",[h?"x0":"y0"]:tg,[h?"x1":"y1"]:tg,[h?"y0":"x0"]:0,[h?"y1":"x1"]:1,[h?"yref":"xref"]:"paper",line:{color:C.nar,dash:"dash",width:1.8}};
+  const maxT=Math.max(...cats.map(x=>x.t),tg);
+  plot(id,[tr],{margin:{l:h?10:50,r:30,t:28,b:40},showlegend:false,shapes:[linea],[h?"xaxis":"yaxis"]:{title:"% de egresos con EHP",range:[0,maxT*1.18]},
+    [h?"yaxis":"xaxis"]:{type:"category",autorange:h?(opts.ordenar?true:"reversed"):true,tickfont:{size:opts.chico?10.5:12}},
+    annotations:[{[h?"x":"y"]:tg,[h?"y":"x"]:1,[h?"xref":"yref"]:h?"x":"y",[h?"yref":"xref"]:"paper",text:"Total: "+fpct(tg),showarrow:false,font:{color:C.nar,size:11},[h?"xanchor":"yanchor"]:"left",[h?"yanchor":"xanchor"]:"bottom"}]});}
+function renderExploracion(){const t=estadoFiltros();const fAll=fusionar(fDias(null));
+  const kp=[["Egresos",fint(t.n)],["% con EHP (&gt; 6 días)",fpct(t.e/t.n*100,2)],["Media de días",fmt(t.s/t.n,2)],["Mediana",fmt(mediana(fAll),1)],["P75",fmt(cuantil(fAll,0.75),1)],["P95",fmt(cuantil(fAll,0.95),1)]];
+  if(F.cap>=0)kp.splice(3,3,["Mediana / P75 / P95","no aplica con filtro de capítulo"]);
+  $("kpis-exp").innerHTML=kp.map((x,i)=>`<div class="kpi ${i===1?"acento":""}"><div class="v" style="${x[1].length>12?"font-size:14px":""}">${x[1]}</div><div class="l">${x[0]}</div></div>`).join("");
+  // Histograma de días hasta el P99 de la muestra (51)
+  const xs=[],ys=[];for(let v=1;v<=51;v++){xs.push(v);const j=fAll.vals.indexOf(v);ys.push(j>=0?fAll.cnts[j]/fAll.n*100:0);}
+  plot("g-hist",[{type:"bar",x:xs,y:ys,marker:{color:xs.map(v=>v>6?C.nar2:C.azul)},hovertemplate:"%{x} días: %{y:.2f} % de los egresos<extra></extra>",name:"Días"}],
+    {bargap:0.08,xaxis:{title:"Días de estada"},yaxis:{title:"% de egresos"},showlegend:false,shapes:[{type:"line",x0:6.5,x1:6.5,y0:0,y1:1,yref:"paper",line:{color:C.nar,dash:"dash",width:2}}],
+     annotations:[{x:6.5,y:1,yref:"paper",text:"P75 = 6 días (umbral EHP)",showarrow:false,xanchor:"left",yanchor:"top",font:{color:C.nar}}]});
+  const pe=t.e/t.n*100;
+  plot("g-balance",[{type:"bar",x:["Normal (≤ 6 días)","Prolongada (> 6 días)"],y:[100-pe,pe],marker:{color:[C.gris2,C.nar]},text:[fpct(100-pe),fpct(pe)],textposition:"outside",
+    customdata:[fint(t.n-t.e),fint(t.e)],hovertemplate:"%{x}: %{y:.2f} %<br>%{customdata} egresos<extra></extra>"}],{yaxis:{title:"% de egresos",range:[0,100]},showlegend:false});
+  barrasTasa("g-t-edad","edad");barrasTasa("g-t-prev","prev",{ordenar:true});barrasTasa("g-t-red","red");barrasTasa("g-t-sexo","sexo");
+  barrasTasa("g-t-cap","cap",{ordenar:true,chico:true});barrasTasa("g-t-reg","reg",{ordenar:true});
+  seg("seg-box",[["red","Red"],["prev","Previsión"],["edad","Edad"],["sexo","Sexo"]],boxDim,v=>{boxDim=v;dibujarCajas("g-box",boxDim);tablaDesc(boxDim);});
+  dibujarCajas("g-box",boxDim);tablaDesc(boxDim);}
+function dibujarCajas(id,dim){const fs=fDias(dim);let cats=CAT[dim].map((c,i)=>({c,i,f:fs[i]})).filter(x=>x.f.n>0);if(dim==="sexo")cats=cats.filter(x=>x.i<2);
+  const col=dim==="edad"?cats.map(()=>C.celeste):cats.map((x,i)=>[C.azul,C.celeste,C.azul2,"#7FA7D3",C.gris2,"#C7D7EA"][i%6]);
+  const tr=cats.map((x,i)=>{const b=cajas(x.f);return {type:"box",name:x.c,x:[x.c],q1:[b.q1],median:[b.q2],q3:[b.q3],lowerfence:[b.lf],upperfence:[b.uf],mean:[b.mean],
+    marker:{color:C.navy},line:{color:C.navy,width:1.3},fillcolor:col[i],boxmean:true,hoverinfo:"y+name"};});
+  plot(id,tr,{showlegend:false,yaxis:{title:"Días de estada (eje acotado al P95)",range:[0,22]},xaxis:{type:"category",tickangle:dim==="edad"?-35:0}});}
+function tablaDesc(dim){const fs=fDias(dim);const g=aggA(dim);let rows=CAT[dim].map((c,i)=>({c,i,f:fs[i],n:g.n[i],e:g.e[i]})).filter(x=>x.f.n>0);if(dim==="sexo")rows=rows.filter(x=>x.i<2);
+  $("t-desc").innerHTML=`<tr><th>${DIM_NOM[dim]}</th><th class="num">Egresos</th><th class="num">Media</th><th class="num">Mediana</th><th class="num">P75</th><th class="num">P95</th><th class="num">% EHP</th></tr>`+
+    rows.map(x=>`<tr><td>${x.c}</td><td class="num">${fint(x.f.n)}</td><td class="num">${fmt(x.f.mean,2)}</td><td class="num">${fmt(mediana(x.f),1)}</td><td class="num">${fmt(cuantil(x.f,0.75),1)}</td><td class="num">${fmt(cuantil(x.f,0.95),1)}</td><td class="num">${x.n?fpct(x.e/x.n*100):"–"}</td></tr>`).join("");}
+
+// =====================================================================
+// 3. RELACIONES
+// =====================================================================
+let diasDim="red",chiDim="edad";
+function renderRelaciones(){estadoFiltros();
+  // A. Spearman
+  const nd=D.dispersion;
+  plot("g-scatter",[{type:"scattergl",mode:"markers",x:nd.x,y:nd.y,marker:{color:C.azul2,size:5,opacity:0.22},hovertemplate:"Edad ≈ %{x:.0f} años<br>%{y} días<extra></extra>"}],
+    {xaxis:{title:"Edad aproximada (marca de clase, años)"},yaxis:{title:"Días de estada"},showlegend:false});
+  const fe=fDias("edad");const ok=fe.filter(f=>f.n>0).length;
+  plot("g-media-edad",[{type:"scatter",mode:"lines+markers",x:CAT.edad,y:fe.map(f=>f.n?f.mean:null),name:"Media",line:{color:C.navy,width:2.4},marker:{size:7}},
+    {type:"scatter",mode:"lines+markers",x:CAT.edad,y:fe.map(f=>f.n?mediana(f):null),name:"Mediana",line:{color:"#006666",width:2,dash:"dash"},marker:{size:7,symbol:"square"}}],
+    {xaxis:{title:"Tramo de edad",type:"category",tickangle:-35},yaxis:{title:"Días de estada",rangemode:"tozero"},legend:{y:1.1,x:0}});
+  if(ok>=2){const s=spearmanEdad(fe.filter(f=>f.n>0));
+    $("res-spearman").innerHTML=card("ρ de Spearman",fmt(s.rho,4))+card("Tamaño del efecto ρ²",fmt(s.rho*s.rho,4))+card("Valor p",fp(s.p))+card("Egresos (N)",fint(s.N))+card("Decisión (α = 0,05)",decision(s.p))+card("Magnitud",magn(s.rho));
+    $("int-spearman").innerHTML=`<p>La asociación entre la edad y la estadía es <b>${s.rho>0?"positiva":"negativa"}</b> y de magnitud <b>${magn(s.rho)}</b> (ρ = ${fmt(s.rho,3)}). ${filtrosActivos()?"":"Es pequeña porque la relación no es monótona: los menores de un año tienen una media alta (10,0 días) y, desde los 50 años, la estadía crece de forma sostenida. Por eso la edad entra al modelo por tramos."}</p>`;}
+  else{$("res-spearman").innerHTML=card("Spearman","Se necesitan al menos 2 tramos de edad");$("int-spearman").innerHTML="<p>Quita el filtro de tramo de edad para calcular la correlación.</p>";}
+  // B. Días según grupo
+  seg("seg-dias",[["red","Red (2 grupos)"],["sexo","Sexo (2 grupos)"],["prev","Previsión (6 grupos)"],["edad","Edad (11 grupos)"]],diasDim,v=>{diasDim=v;testDias();});testDias();
+  // C. Chi-cuadrado
+  seg("seg-chi",[["edad","Edad"],["prev","Previsión"],["red","Red"],["sexo","Sexo"],["cap","Capítulo CIE-10"],["reg","Región"]],chiDim,v=>{chiDim=v;testChi();});testChi();
+  // DIAG1 por letra (estático)
+  const L=D.letra;$("l-ncod").textContent=fint(L.n_codigos);$("l-pct5").textContent=fmt(L.pct_esp_menor5,1);
+  $("res-letra").innerHTML=card("χ² ("+L.gl+" gl)",fmt(L.chi2,2))+card("Valor p",fp(L.p))+card("V de Cramér",fmt(L.v,3)+" ("+magn(L.v)+")")+card("Frecuencia esperada mínima",fmt(L.emin,1))+card("Decisión",decision(L.p));
+  plot("g-letra",[{type:"bar",x:L.letras,y:L.tasa,marker:{color:L.tasa.map(t=>t>=D.tasa_global?C.nar:C.azul)},customdata:L.n.map(fint),hovertemplate:"Letra %{x}: %{y:.1f} % EHP<br>%{customdata} egresos<extra></extra>"}],
+    {xaxis:{title:"Primera letra de DIAG1",type:"category"},yaxis:{title:"% de egresos con EHP"},showlegend:false,shapes:[{type:"line",x0:0,x1:1,xref:"paper",y0:D.tasa_global,y1:D.tasa_global,line:{color:C.nar,dash:"dash"}}]});
+  if(!renderizado.resumen){tablaResumen();tablaB1();renderizado.resumen=true;}}
+function nombresDim(dim){return dim==="sexo"?CAT.sexo.slice(0,2):CAT[dim];}
+function testDias(){const dim=diasDim;let fs=fDias(dim);if(dim==="sexo")fs=fs.slice(0,2);const nom=nombresDim(dim);const valid=fs.map((f,i)=>i).filter(i=>fs[i].n>0);
+  const dos=dim==="red"||dim==="sexo";
+  $("hip-dias").innerHTML=dos?`Levene: H<sub>0</sub>: σ²<sub>1</sub> = σ²<sub>2</sub>. Mann–Whitney: H<sub>0</sub>: θ = P(X &gt; Y) + ½P(X = Y) = ½ (ningún grupo tiende a tener estadías más largas) frente a H<sub>1</sub>: θ ≠ ½.`
+    :`Levene: H<sub>0</sub>: σ²<sub>1</sub> = … = σ²<sub>k</sub>. Kruskal–Wallis: H<sub>0</sub>: F<sub>1</sub> = … = F<sub>k</sub> frente a H<sub>1</sub>: al menos un grupo tiende a tener estadías más largas o más cortas. Si se rechaza, post-hoc de Dunn con Bonferroni.`;
+  dibujarCajas("g-box2",dim);
+  if(valid.length<2){$("res-dias").innerHTML=card("Prueba","Se necesitan al menos 2 grupos con datos: quita el filtro de "+DIM_NOM[dim].toLowerCase());$("int-dias").innerHTML="";$("cont-dunn").classList.add("oculto");return;}
+  const lev=levene(valid.map(i=>fs[i]));let html=card("Levene W ("+lev.d1+"; "+fint(lev.d2)+" gl)",fmt(lev.W,2)+" · p "+fp(lev.p));let txt="";
+  if(dos){if(dim==="red")valid.reverse();// como en el paper: SNSS primero, hombre primero
+    const a=fs[valid[0]],b=fs[valid[1]];const m=mannWhitney(a,b);
+    html+=card("Mann–Whitney U",fsci(m.U,2))+card("Valor p",fp(m.p))+card("Prob. de superioridad θ̂",fmt(m.theta,3))+card("r<sub>rb</sub> (tamaño del efecto)",fmt(m.rrb,3)+" ("+magn(m.rrb)+")")+card("Decisión",decision(m.p));
+    txt=`<p>${lev.p<0.05?"Levene rechaza la igualdad de dispersión, por lo que las distribuciones no tienen la misma forma y Mann–Whitney se lee como <b>tendencia a estadías más largas</b>, no como diferencia de medianas.":"Levene no rechaza la igualdad de dispersión."} En el <b>${fmt(m.theta*100,1)} %</b> de los pares de egresos ${nom[valid[0]]}–${nom[valid[1]]}, el de <b>${nom[valid[0]]}</b> tiene la estadía más larga (contando empates como medio caso): efecto <b>${magn(m.rrb)}</b>. Media: ${fmt(a.mean,2)} frente a ${fmt(b.mean,2)} días; mediana: ${fmt(mediana(a),1)} frente a ${fmt(mediana(b),1)}.</p>`;
+    $("cont-dunn").classList.add("oculto");}
+  else{const k=kruskal(valid.map(i=>fs[i]));html+=card("Kruskal–Wallis H ("+k.gl+" gl)",fmt(k.H,2))+card("Valor p",fp(k.p))+card("ε² (tamaño del efecto)",fmt(k.eps2,4)+" ("+magn(k.eps2,CE2)+")")+card("Decisión",decision(k.p));
+    const du=dunn(fs,nom);const sig=du.filter(r=>r.p<0.05).length;$("cont-dunn").classList.remove("oculto");
+    $("tit-dunn").innerHTML=`Post-hoc de Dunn (Bonferroni): ${sig} de ${du.length} pares difieren <span class="etq">Paper: Tabla ${dim==="prev"?"C.2":"C.3"}</span>`;
+    $("t-dunn").innerHTML=`<tr><th>Grupo 1</th><th>Grupo 2</th><th class="num">Rango medio 1</th><th class="num">Rango medio 2</th><th class="num">z</th><th class="num">p Bonferroni</th><th class="num">r<sub>rb</sub></th></tr>`+
+      du.map(r=>`<tr class="${r.p<0.05?"":"sig-no"}"><td>${r.a}</td><td>${r.b}</td><td class="num">${fint(r.ra)}</td><td class="num">${fint(r.rb)}</td><td class="num">${fmt(r.z,2)}</td><td class="num">${fp(r.p)}</td><td class="num">${fmt(r.rrb,3)}</td></tr>`).join("");
+    const chicos=du.filter(r=>Math.abs(r.rrb)<0.1).length;const mayor=du.reduce((a,b)=>Math.abs(b.rrb)>Math.abs(a.rrb)?b:a);
+    txt=`<p>Kruskal–Wallis ${k.p<0.05?"rechaza":"no rechaza"} H<sub>0</sub> con un efecto global <b>${magn(k.eps2,CE2)}</b> (ε² = ${fmt(k.eps2,3)}). ${lev.p<0.05?"Levene rechaza la igualdad de dispersión, de modo que el resultado indica que algún grupo tiende a tener estadías más largas, no que difieran las medianas.":""} Según Dunn, ${sig} de ${du.length} pares difieren, pero ${chicos} tienen |r<sub>rb</sub>| &lt; 0,1 (diferencias muy pequeñas, significativas por el tamaño de la muestra). El contraste más marcado es ${mayor.a} frente a ${mayor.b} (r<sub>rb</sub> = ${fmt(mayor.rrb,3)}). Orden de rangos medios: ${[...new Set(du.flatMap(r=>[r.a,r.b]))].join(" &gt; ")}.</p>`;}
+  $("res-dias").innerHTML=html;$("int-dias").innerHTML=txt;}
+function testChi(){const dim=chiDim;const g=aggA(dim);let idx=CAT[dim].map((c,i)=>i);if(dim==="sexo")idx=idx.slice(0,2);idx=idx.filter(i=>g.n[i]>0);
+  const nom=CAT[dim];
+  if(idx.length<2){$("res-chi").innerHTML=card("Prueba","Se necesitan al menos 2 categorías: quita el filtro de "+DIM_NOM[dim].toLowerCase());$("t-chi").innerHTML="";$("int-chi").innerHTML="";Plotly.purge("g-chi");return;}
+  const tab=idx.map(i=>[g.n[i]-g.e[i],g.e[i]]);const r=chi2Tabla(tab);
+  $("res-chi").innerHTML=card("χ² ("+r.gl+" gl)"+(r.gl===1?" con Yates":""),fmt(r.X2,2))+card("Valor p",fp(r.p))+card("V de Cramér",fmt(r.V,3)+" ("+magn(r.V)+")")+card("Frecuencia esperada mínima",fmt(r.emin,1)+(r.emin>=5?" ✓":" ✗"))+card("Decisión",decision(r.p));
+  let orden=idx.map((i,j)=>({i,j,t:tab[j][1]/(tab[j][0]+tab[j][1])*100}));if(dim==="cap"||dim==="reg"||dim==="prev")orden.sort((a,b)=>a.t-b.t);
+  const tg=r.N?tab.reduce((s,x)=>s+x[1],0)/r.N*100:0;
+  if(dim==="edad"){plot("g-chi",[{type:"heatmap",y:orden.map(o=>nom[o.i]),x:["Normal (≤ 6 días)","Prolongada (> 6 días)"],z:orden.map(o=>[100-o.t,o.t]),colorscale:"YlGnBu",
+      text:orden.map(o=>[fpct(100-o.t),fpct(o.t)]),texttemplate:"%{text}",hovertemplate:"%{y} · %{x}: %{z:.1f} %<extra></extra>",colorbar:{title:{text:"% del tramo"}}}],
+      {yaxis:{autorange:"reversed",type:"category"},xaxis:{side:"bottom"},margin:{l:110}});}
+  else{plot("g-chi",[{type:"bar",name:"Normal (≤ 6 días)",x:orden.map(o=>nom[o.i]),y:orden.map(o=>100-o.t),marker:{color:C.celeste,line:{color:"#334155",width:0.6}},hovertemplate:"%{x}: %{y:.1f} % normal<extra></extra>"},
+      {type:"bar",name:"Prolongada (> 6 días)",x:orden.map(o=>nom[o.i]),y:orden.map(o=>o.t),marker:{color:"#1F78B4",line:{color:"#334155",width:0.6}},hovertemplate:"%{x}: %{y:.1f} % EHP<extra></extra>"}],
+      {barmode:"stack",yaxis:{title:"% de egresos",range:[0,100]},xaxis:{type:"category",tickangle:(dim==="cap"||dim==="reg")?-40:0,tickfont:{size:dim==="cap"?10:12}},legend:{y:1.12,x:0},
+       shapes:[{type:"line",x0:0,x1:1,xref:"paper",y0:100-tg,y1:100-tg,line:{color:"#D9534F",dash:"dash",width:1.8}}],
+       annotations:[{x:1,xref:"paper",y:100-tg,text:"Tasa global: "+fpct(tg),showarrow:false,xanchor:"right",yanchor:"bottom",font:{color:"#D9534F",size:11}}]});}
+  $("t-chi").innerHTML=`<tr><th>${DIM_NOM[dim]}</th><th class="num">Normal (O)</th><th class="num">EHP (O)</th><th class="num">EHP (E)</th><th class="num">% EHP</th></tr>`+
+    idx.map((i,j)=>`<tr><td>${nom[i]}</td><td class="num">${fint(tab[j][0])}</td><td class="num">${fint(tab[j][1])}</td><td class="num">${fint(r.E[j][1])}</td><td class="num">${fpct(tab[j][1]/(tab[j][0]+tab[j][1])*100)}</td></tr>`).join("");
+  const mx=orden.reduce((a,b)=>b.t>a.t?b:a),mn=orden.reduce((a,b)=>b.t<a.t?b:a);
+  $("int-chi").innerHTML=`<p>${r.p<0.05?"Se rechaza":"No se rechaza"} la independencia (χ² = ${fmt(r.X2,1)}, ${r.gl} gl, p ${fp(r.p)}). La tasa de EHP va de <b>${fpct(mn.t)}</b> en ${nom[mn.i]} a <b>${fpct(mx.t)}</b> en ${nom[mx.i]}; la fuerza de la asociación es <b>${magn(r.V)}</b> (V = ${fmt(r.V,3)}). ${r.emin>=5?"Todas las frecuencias esperadas superan 5, por lo que la aproximación χ² es válida.":"Hay celdas con frecuencia esperada menor que 5: interpreta con cautela."} Estos resultados son bivariados; el modelo de la pestaña 5 ajusta por las demás variables.</p>`;}
+function tablaResumen(){// Siempre con la muestra completa
+  const fe=freqB("edad",true),fr=freqB("red",true),fs=freqB("sexo",true),fp_=freqB("prev",true);
+  const sp=spearmanEdad(fe);const lr=levene(fr),mr=mannWhitney(fr[1],fr[0]);const ls=levene(fs.slice(0,2)),ms=mannWhitney(fs[0],fs[1]);
+  const lp=levene(fp_),kp=kruskal(fp_);const le=levene(fe),ke=kruskal(fe);
+  const chi=dim=>{const g=totA_sinFiltro(dim);let idx=CAT[dim].map((c,i)=>i);if(dim==="sexo")idx=[0,1];return chi2Tabla(idx.map(i=>[g.n[i]-g.e[i],g.e[i]]));};
+  const ce=chi("edad"),cp=chi("prev"),cr=chi("red"),cs=chi("sexo");const N=D.normalidad,L=D.letra;
+  const filas=[["Días de estada – normal","Shapiro–Wilk / Lilliefors / Anderson–Darling (n = 5.000)",`W = ${fmt(N.sw[0],3)}; D = ${fmt(N.ks[0],3)}; A² = ${fmt(N.ad[0],1)}`,"–","No aplica","–",fp(N.sw[1])],
+    ["Edad (orden de tramos) – días","Spearman",`ρ<sub>S</sub> = ${fmt(sp.rho,3)}`,"–",`ρ² = ${fmt(sp.rho**2,4)}`,magn(sp.rho),fp(sp.p)],
+    ["Red – días","Mann–Whitney",`U = ${fsci(mr.U,2)}`,fmt(lr.W,1),`θ̂ = ${fmt(mr.theta,3)}; r<sub>rb</sub> = ${fmt(mr.rrb,3)}`,magn(mr.rrb),fp(mr.p)],
+    ["Sexo – días","Mann–Whitney",`U = ${fsci(ms.U,2)}`,fmt(ls.W,1),`θ̂ = ${fmt(ms.theta,3)}; r<sub>rb</sub> = ${fmt(ms.rrb,3)}`,magn(ms.rrb),fp(ms.p)],
+    ["Previsión – días","Kruskal–Wallis + Dunn",`H(${kp.gl}) = ${fmt(kp.H,1)}`,fmt(lp.W,1),`ε² = ${fmt(kp.eps2,3)}`,magn(kp.eps2,CE2),fp(kp.p)],
+    ["Edad (11 tramos) – días","Kruskal–Wallis + Dunn",`H(${ke.gl}) = ${fmt(ke.H,1)}`,fmt(le.W,1),`ε² = ${fmt(ke.eps2,3)}`,magn(ke.eps2,CE2),fp(ke.p)],
+    ["Edad – EHP","χ²",`X²(${ce.gl}) = ${fmt(ce.X2,1)}`,"–",`V = ${fmt(ce.V,3)}`,magn(ce.V),fp(ce.p)],
+    ["Previsión – EHP","χ²",`X²(${cp.gl}) = ${fmt(cp.X2,1)}`,"–",`V = ${fmt(cp.V,3)}`,magn(cp.V),fp(cp.p)],
+    ["Red – EHP","χ² (Yates)",`X²(${cr.gl}) = ${fmt(cr.X2,1)}`,"–",`V = ${fmt(cr.V,3)}`,magn(cr.V),fp(cr.p)],
+    ["Sexo – EHP","χ² (Yates)",`X²(${cs.gl}) = ${fmt(cs.X2,1)}`,"–",`V = ${fmt(cs.V,3)}`,magn(cs.V),fp(cs.p)],
+    ["Diagnóstico (letra) – EHP","χ²",`X²(${L.gl}) = ${fmt(L.chi2,1)}`,"–",`V = ${fmt(L.v,3)}`,magn(L.v),fp(L.p)]];
+  $("t-resumen").innerHTML="<tr><th>Relación</th><th>Prueba</th><th>Estadístico</th><th class='num'>Levene W<sub>L</sub></th><th>Efecto</th><th>Magnitud</th><th class='num'>Valor p</th><th>Decisión</th></tr>"+
+    filas.map(f=>`<tr><td>${f[0]}</td><td>${f[1]}</td><td>${f[2]}</td><td class="num">${f[3]}</td><td>${f[4]}</td><td>${f[5]}</td><td class="num">${f[6]}</td><td>${decision(0)}</td></tr>`).join("");}
+function tablaB1(){const f=[["Normalidad de D (SW, Lilliefors, AD)","D ∼ N(μ, σ²)","D ≁ N(μ, σ²)","W, D, A²; tablas específicas"],["Spearman, orden de tramos y D","ρ<sub>S</sub> = 0","ρ<sub>S</sub> ≠ 0","T ≈ t<sub>n−2</sub>"],
+  ["Levene, D por red, sexo, previsión y edad","σ²<sub>1</sub> = … = σ²<sub>k</sub>","Alguna σ²<sub>j</sub> distinta","W<sub>L</sub> ∼ F<sub>k−1, N−k</sub>"],["Mann–Whitney, D por red / sexo","θ<sub>AB</sub> = ½","θ<sub>AB</sub> ≠ ½","z ≈ N(0, 1)"],
+  ["Kruskal–Wallis, D por previsión / edad","F<sub>1</sub> = … = F<sub>k</sub>","Alguna F<sub>j</sub> domina a otra","H ≈ χ²<sub>k−1</sub>"],["Dunn (Bonferroni), 15 / 55 pares","F<sub>i</sub> = F<sub>j</sub>","F<sub>i</sub> ≠ F<sub>j</sub>","z<sub>ij</sub> ≈ N(0, 1)"],
+  ["χ²: edad, previsión, red, sexo y diagnóstico (letra) con Y","π<sub>ij</sub> = π<sub>i·</sub>π<sub>·j</sub>","π<sub>ij</sub> ≠ π<sub>i·</sub>π<sub>·j</sub> para algún (i, j)","X² ≈ χ²<sub>(r−1)(c−1)</sub>"],
+  ["Wald por coeficiente","β<sub>j</sub> = 0","β<sub>j</sub> ≠ 0","z<sub>j</sub> ≈ N(0, 1)"],["Razón de verosimilitud global","β<sub>1</sub> = … = β<sub>37</sub> = 0","Algún β<sub>j</sub> ≠ 0","G ≈ χ²<sub>37</sub>"],
+  ["Razón de verosimilitud por variable (H<sub>0,1</sub>–H<sub>0,3</sub>, sexo, diagnóstico)","β<sub>V</sub> = 0","β<sub>V</sub> ≠ 0","G ≈ χ²<sub>q</sub>, q ∈ {10, 5, 1, 1, 20}"],
+  ["Edad lineal (M2) frente a tramos (M3)","El logit es lineal en la edad (9 restricciones)","No lineal","G ≈ χ²<sub>9</sub>"],["Hosmer–Lemeshow","El modelo está bien calibrado","No está bien calibrado","Ĉ ≈ χ²<sub>8</sub>"]];
+  $("t-b1").innerHTML="<tr><th>Contraste</th><th>H<sub>0</sub></th><th>H<sub>1</sub></th><th>Estadístico y distribución bajo H<sub>0</sub></th></tr>"+f.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("");}
+
+// =====================================================================
+// Modelo: utilidades compartidas
+// =====================================================================
+const M=D.modelo,NOMB=M.nombres,IDX={};NOMB.forEach((n,i)=>IDX[n]=i);
+const PHI=D.residuos.phi;
+function etiqueta(n){if(n==="const")return "Intercepto";return n.replace("CAPITULO_","Cap.: ").replace("PREVISION_","Previsión: ").replace("EDAD_","Edad: ").replace("RED_SNSS","Red: SNSS").replace("SEXO_MUJER","Sexo: mujer");}
+function grupoCoef(n){return n==="const"?"const":n.split("_")[0];}
+const COLG={CAPITULO:C.azul,EDAD:"#555555",PREVISION:C.nar,RED:C.verde,SEXO:C.morado};
+const NOMG={EDAD:"Edad (ref.: 30 a 39 años)",SEXO:"Sexo (ref.: hombre)",PREVISION:"Previsión (ref.: ISAPRE)",RED:"Red (ref.: No SNSS)",CAPITULO:"Capítulo CIE-10 (ref.: digestivo)"};
+
+// =====================================================================
+// 4. DIAGNÓSTICOS
+// =====================================================================
+function renderDiagnosticos(){const N=D.normalidad,R=D.resumen;
+  document.querySelectorAll("#diagnosticos [data-k]").forEach(el=>{const k=el.dataset.k;el.textContent=k==="mediana"?fmt(R[k],0):fmt(R[k],2);});
+  $("res-norm").innerHTML=card("Shapiro–Wilk W",fmt(N.sw[0],4)+" · p "+fp(N.sw[1]))+card("Lilliefors (K-S) D",fmt(N.ks[0],4)+" · p ≤ 0,001")+card("Anderson–Darling A²",fmt(N.ad[0],1)+" (crítico 5 %: "+fmt(N.ad[1],3)+")")+card("Decisión en las tres pruebas",decision(0));
+  plot("g-norm-hist",[{type:"bar",x:N.hist_x,y:N.hist_y,width:N.hist_w*0.95,name:"Densidad empírica (hasta P99)",marker:{color:C.azul2,opacity:0.7},hovertemplate:"%{x:.1f} días: densidad %{y:.4f}<extra></extra>"},
+    {type:"scatter",mode:"lines",x:N.norm_x,y:N.norm_y,name:"Ajuste normal teórico",line:{color:"#D9534F",dash:"dash",width:2.2}}],
+    {xaxis:{title:"Días de estada"},yaxis:{title:"Densidad"},shapes:[{type:"line",x0:6,x1:6,y0:0,y1:1,yref:"paper",line:{color:"#F0AD4E",width:2.2,dash:"dashdot"}}],
+     annotations:[{x:6,y:1,yref:"paper",text:"Umbral P75 (6 días)",showarrow:false,xanchor:"left",yanchor:"top",font:{color:"#B7791F"}}]});
+  const [b,a]=N.qq_linea;const x0=Math.min(...N.qq_x),x1=Math.max(...N.qq_x);
+  plot("g-qq",[{type:"scattergl",mode:"markers",x:N.qq_x,y:N.qq_y,name:"Cuantiles empíricos",marker:{color:C.azul2,size:4},hovertemplate:"Teórico %{x:.2f}<br>Empírico %{y} días<extra></extra>"},
+    {type:"scatter",mode:"lines",x:[x0,x1],y:[a+b*x0,a+b*x1],name:"Recta normal de referencia",line:{color:"#D9534F",width:2}}],
+    {xaxis:{title:"Cuantiles teóricos N(0, 1)"},yaxis:{title:"Cuantiles empíricos (días)"}});
+  // VIF
+  const V=D.vif;plot("g-vif",[{type:"bar",orientation:"h",y:V.nombres.map(etiqueta),x:V.valor,marker:{color:V.valor.map(v=>v>5?C.nar:C.azul)},hovertemplate:"%{y}: VIF = %{x:.2f}<extra></extra>"}],
+    {yaxis:{autorange:"reversed",tickfont:{size:10}},xaxis:{title:"VIF",range:[0,5.6]},showlegend:false,margin:{l:10},shapes:[{type:"line",x0:5,x1:5,y0:0,y1:1,yref:"paper",line:{color:C.nar,dash:"dash"}}],
+     annotations:[{x:5,y:0,yref:"paper",text:"Referencia: VIF = 5",showarrow:false,xanchor:"right",yanchor:"bottom",font:{color:C.nar,size:11}}]});
+  $("int-vif").innerHTML=`<p><b>VIF<sub>j</sub> = 1/(1 − R²<sub>j</sub>)</b>, calculado como la diagonal de la inversa de la matriz de correlación de las 37 indicadoras.</p><p>El VIF máximo es <b>${fmt(V.valor[0],2)}</b> (${etiqueta(V.nombres[0])}) y ninguna covariable supera 5: no hay multicolinealidad severa. FONASA y la red SNSS tienen valores algo mayores porque la mayoría de los egresos FONASA se atiende en el SNSS, pero esa relación no impide estimar sus efectos por separado.</p>`;
+  // Linealidad
+  const Li=D.linealidad;
+  plot("g-lin",[{type:"scatter",mode:"lines+markers",x:Li.edad,y:Li.logit,name:"Logit empírico por tramo",line:{color:C.azul,width:2.2},marker:{size:8},text:Li.tramos,customdata:Li.tasa.map(t=>fpct(t*100)),hovertemplate:"%{text}<br>logit = %{y:.3f}<br>tasa = %{customdata}<extra></extra>"},
+    {type:"scatter",mode:"lines",x:Li.edad,y:Li.recta,name:"Recta ajustada (efecto lineal)",line:{color:C.nar,dash:"dash",width:2}}],{xaxis:{title:"Edad (marca de clase, años)"},yaxis:{title:"Logit de EHP"}});
+  const ord=CAT.edad;const orE=ord.map(t=>t==="30 a 39"?[1,1,1]:[Math.exp(M.beta[IDX["EDAD_"+t]]),M.ic_inf[IDX["EDAD_"+t]],M.ic_sup[IDX["EDAD_"+t]]]);
+  plot("g-or-edad",[{type:"scatter",mode:"lines+markers",x:ord,y:orE.map(o=>o[0]),error_y:{type:"data",symmetric:false,array:orE.map(o=>o[2]-o[0]),arrayminus:orE.map(o=>o[0]-o[1]),color:C.azul,thickness:1.4,width:4},
+    line:{color:C.azul},marker:{size:8,color:ord.map(t=>t==="30 a 39"?C.nar:C.azul)},customdata:orE.map(o=>[fmt(o[1],2),fmt(o[2],2)]),hovertemplate:"%{x}: OR = %{y:.2f} (IC 95 %: %{customdata[0]}–%{customdata[1]})<extra></extra>"}],
+    {xaxis:{type:"category",title:"Tramo de edad",tickangle:-35},yaxis:{title:"OR ajustado (ref.: 30 a 39)",range:[0.3,3.05]},showlegend:false,shapes:[{type:"line",x0:0,x1:1,xref:"paper",y0:1,y1:1,line:{color:"#111",dash:"dash",width:1}}]});
+  const Lr=D.lr;$("int-lin").innerHTML=`<p>El logit empírico <b>no sigue una recta</b>: es alto en menores de un año (${fmt(Li.logit[0],2)}), cae hasta el mínimo en 30 a 39 años (${fmt(Li.logit[4],2)}) y crece desde los 40 años hasta ${fmt(Li.logit[10],2)}. Por eso la edad entra por tramos: el modelo con tramos (M3) mejora al de edad lineal (M2): G = ${fmt(Lr.G_edad,1)}, q = ${Lr.q_edad}, p ${fp(Lr.p_edad)}.</p><p>Al ajustar por las demás variables, el OR de los menores de un año baja a ${fmt(orE[0][0],2)} (IC 95 %: ${fmt(orE[0][1],2)}–${fmt(orE[0][2],2)}): su tasa alta se asocia sobre todo con el diagnóstico perinatal.</p>`;
+  // Hosmer–Lemeshow
+  const H=D.hl;$("res-hl").innerHTML=card("R² de McFadden",fmt(H.r2,3))+card("Hosmer–Lemeshow Ĉ ("+H.gl+" gl)",fmt(H.C,1)+" (crítico "+fmt(H.critico,2)+")")+card("Valor p",fp(H.p))+card("Prob. media estimada / observada",fmt(H.p_media,4)+" / "+fmt(H.obs,4))+card("Diferencia media por grupo",fmt(H.dif_media*100,2)+" pp");
+  plot("g-calib",[{type:"scatter",mode:"lines+markers",x:H.pm,y:H.po,name:"Grupos de riesgo (deciles)",line:{color:C.azul,width:2.2},marker:{size:9},customdata:H.n.map((n,i)=>[i+1,fint(n),fint(H.O[i]),fint(H.E[i])]),
+    hovertemplate:"Decil %{customdata[0]} (n = %{customdata[1]})<br>Estimada: %{x:.3f}<br>Observada: %{y:.3f}<br>O = %{customdata[2]}, E = %{customdata[3]}<extra></extra>"},
+    {type:"scatter",mode:"lines",x:[0,0.7],y:[0,0.7],name:"Calibración perfecta",line:{color:"#111",dash:"dash",width:1.2}}],
+    {xaxis:{title:"Probabilidad estimada (promedio del grupo)",range:[0,0.62]},yaxis:{title:"Proporción observada de EHP",range:[0,0.62]}});
+  $("t-hl").innerHTML="<tr><th>Decil</th><th class='num'>n</th><th class='num'>Observados</th><th class='num'>Esperados</th><th class='num'>p̂ media</th><th class='num'>Prop. observada</th><th class='num'>Aporte a Ĉ</th></tr>"+
+    H.n.map((n,i)=>`<tr><td>${i+1}</td><td class="num">${fint(n)}</td><td class="num">${fint(H.O[i])}</td><td class="num">${fint(H.E[i])}</td><td class="num">${fmt(H.pm[i],3)}</td><td class="num">${fmt(H.po[i],3)}</td><td class="num">${fmt(H.aporte[i],1)}</td></tr>`).join("");
+  $("int-hl").innerHTML=`<p>Hosmer–Lemeshow <b>rechaza</b> el buen ajuste, pero con casi un millón de egresos la prueba detecta diferencias pequeñas, por lo que se lee junto con el gráfico: la probabilidad media estimada coincide con la observada (${fmt(H.obs,4)}) y la diferencia media por grupo es de ${fmt(H.dif_media*100,1)} puntos porcentuales. Las mayores desviaciones están en el tercer grupo (${fpct(H.pm[2]*100)} estimado frente a ${fpct(H.po[2]*100)} observado) y en el de mayor riesgo (${fpct(H.pm[9]*100)} frente a ${fpct(H.po[9]*100)}), donde el modelo sobreestima. El R² de McFadden (${fmt(H.r2,3)}) indica que las cinco variables explican solo parte de la variación.</p>`;
+  // Residuos por patrón
+  const P=D.patrones,Rs=D.residuos;const perfil=c=>`${CAT.edad[c[0]]} · ${c[1]?"Mujer":"Hombre"} · ${CAT.prev[c[2]]} · ${CAT.red[c[3]]} · ${CAT.cap[c[4]]}`;
+  const tam=P.n.map(n=>Math.max(3,Math.min(40,Math.sqrt(n)/2.2)));const txt=P.cod.map((c,i)=>perfil(c)+`<br>n = ${fint(P.n[i])} · O = ${fint(P.O[i])} · E = ${fint(P.n[i]*P.p[i])}`);
+  $("res-resid").innerHTML=card("Egresos con |r Pearson| &gt; 2",fpct(Rs.pct_pearson2,2))+card("Egresos con |r devianza| &gt; 2",fpct(Rs.pct_dev2,2))+card("Patrones de covariables (J)",fint(Rs.K))+
+    card("Patrones con |r estandarizado| &gt; 2",fpct(Rs.pct_rstd2)+" (concentran "+fpct(Rs.pct_egr_rstd2)+" de los egresos)")+card("Sobredispersión φ̂ = X²/gl",fmt(Rs.X2,1)+" / "+fint(Rs.gl)+" = <b>"+fmt(Rs.phi,2)+"</b>")+card("Cook máximo / patrones con Cook &gt; 1",fmt(Rs.cook_max,2)+" / "+Rs.n_cook1);
+  plot("g-resid",[{type:"scattergl",mode:"markers",x:P.p,y:P.r_std,marker:{size:tam,color:C.azul,opacity:0.38,line:{width:0}},text:txt,hovertemplate:"%{text}<br>p̂ = %{x:.3f} · r = %{y:.1f}<extra></extra>"}],
+    {xaxis:{title:"Probabilidad estimada del patrón"},yaxis:{title:"Residuo de Pearson estandarizado"},showlegend:false,
+     shapes:[2,-2].map(v=>({type:"line",x0:0,x1:1,xref:"paper",y0:v,y1:v,line:{color:C.nar,dash:"dash"}}))});
+  plot("g-cook",[{type:"scattergl",mode:"markers",x:P.H,y:P.cook,marker:{size:tam,color:P.cook.map(c=>c>1?C.nar:C.azul),opacity:0.45,line:{width:0}},text:txt,hovertemplate:"%{text}<br>h = %{x:.3f} · Cook = %{y:.3f}<extra></extra>"}],
+    {xaxis:{title:"Apalancamiento del patrón (h)"},yaxis:{title:"Distancia de Cook"},showlegend:false,shapes:[{type:"line",x0:0,x1:1,xref:"paper",y0:1,y1:1,line:{color:C.nar,dash:"dot"}}]});
+  const top=P.cook.map((c,i)=>i).sort((a,b)=>P.cook[b]-P.cook[a]).slice(0,8);
+  $("t-cook").innerHTML="<tr><th>Edad</th><th>Sexo</th><th>Previsión</th><th>Red</th><th>Capítulo</th><th class='num'>n</th><th class='num'>Observados</th><th class='num'>Esperados</th><th class='num'>r estand.</th><th class='num'>h</th><th class='num'>Cook</th></tr>"+
+    top.map(i=>{const c=P.cod[i];return `<tr><td>${CAT.edad[c[0]]}</td><td>${c[1]?"Mujer":"Hombre"}</td><td>${CAT.prev[c[2]]}</td><td>${CAT.red[c[3]]}</td><td>${CAT.cap[c[4]]}</td><td class="num">${fint(P.n[i])}</td><td class="num">${fint(P.O[i])}</td><td class="num">${fmt(P.n[i]*P.p[i],1)}</td><td class="num">${fmt(P.r_std[i],1)}</td><td class="num">${fmt(P.H[i],3)}</td><td class="num">${fmt(P.cook[i],3)}</td></tr>`;}).join("");
+  // Sensibilidad
+  const S=D.sensibilidad;const princ=["EDAD_Menor de 1 año","EDAD_60 a 69","EDAD_70 a 79","EDAD_80 a 89","EDAD_90 y más","SEXO_MUJER","PREVISION_FONASA","PREVISION_CAPREDENA","PREVISION_DIPRECA","PREVISION_SISA","PREVISION_NINGUNA","RED_SNSS","CAPITULO_Trastornos mentales","CAPITULO_Perinatal","CAPITULO_Embarazo y parto"];
+  $("t-sens").innerHTML="<tr><th>Coeficiente</th><th class='num'>OR</th><th class='num'>IC 95 % nominal</th><th class='num'>IC 95 % escalado por √φ̂</th><th class='num'>OR sin patrones influyentes</th><th class='num'>Cambio</th></tr>"+
+    princ.map(n=>{const i=IDX[n],j=i;const or=Math.exp(M.beta[i]);const cruza=S.ic_inf_esc[j]<=1&&S.ic_sup_esc[j]>=1;return `<tr><td>${etiqueta(n)}</td><td class="num">${fmt(or,3)}</td><td class="num">${fmt(M.ic_inf[i],3)}–${fmt(M.ic_sup[i],3)}</td><td class="num" style="${cruza?"color:#B5400B;font-weight:650":""}">${fmt(S.ic_inf_esc[j],3)}–${fmt(S.ic_sup_esc[j],3)}</td><td class="num">${fmt(S.or_sin_infl[j],3)}</td><td class="num">${fmt((S.or_sin_infl[j]/or-1)*100,1)} %</td></tr>`;}).join("");
+  const cruzan=NOMB.slice(1).map((n,j)=>[n,j+1]).filter(([n,k])=>S.ic_inf_esc[k]<=1&&S.ic_sup_esc[k]>=1).map(([n,k])=>etiqueta(n)+((M.ic_inf[k]<=1&&M.ic_sup[k]>=1)?" (ya lo incluía con el IC nominal)":""));
+  $("int-sens").innerHTML=`<p>Con φ̂ = ${fmt(PHI,2)} los intervalos se ensanchan unas ${fmt(Math.sqrt(PHI),1)} veces. Solo ${cruzan.length} coeficientes incluyen el 1: <b>${cruzan.join(", ")}</b> (en naranjo). Sin los ${D.residuos.n_cook1} patrones influyentes (${fint(S.n_excl)} egresos, ${fpct(S.pct_excl)}), los OR principales cambian poco, salvo el de los menores de un año. Conclusión: la dirección y el orden de los efectos principales son estables, pero los intervalos nominales probablemente son demasiado estrechos.</p>`;}
+
+// =====================================================================
+// 5. MODELO
+// =====================================================================
+let forestGrupo="todas",icTipo="nom",gTipo="G",corteActual=null;
+function renderModelo(){const H=D.hl,Lr=D.lr;const m3=Lr.comparacion[3];
+  $("kpis-modelo").innerHTML=[["Egresos (n)",fint(M.nobs)],["Eventos (EHP = 1)",fint(M.eventos)],["Parámetros",NOMB.length],["Iteraciones (convergió)",M.iter],["Devianza",fmt(Lr.D_completo,1)],["AIC",fmt(m3.aic,1)],["R² McFadden",fmt(H.r2,3)],["AUC",fmt(D.roc.auc,3)]]
+    .map((x,i)=>`<div class="kpi ${i>=6?"acento":""}"><div class="v">${x[1]}</div><div class="l">${x[0]}</div></div>`).join("");
+  seg("seg-forest",[["todas","Todas"],["EDAD","Edad"],["PREVISION","Previsión"],["RED","Red"],["SEXO","Sexo"],["CAPITULO","Capítulo"]],forestGrupo,v=>{forestGrupo=v;forest();});
+  seg("seg-ic",[["nom","Nominal"],["esc","Escalado (√φ̂)"]],icTipo,v=>{icTipo=v;forest();});forest();
+  // Tabla de coeficientes
+  const S=D.sensibilidad;let html="<tr><th>Coeficiente</th><th class='num'>β̂</th><th class='num'>EE</th><th class='num'>z (Wald)</th><th class='num'>Valor p</th><th class='num'>OR</th><th class='num'>IC 95 %</th><th class='num'>IC 95 % escalado</th></tr>";let g0="";
+  NOMB.forEach((n,i)=>{const g=grupoCoef(n);if(g!==g0&&g!=="const"){html+=`<tr class="grupo"><td colspan="8">${NOMG[g]}</td></tr>`;g0=g;}const j=i;
+    html+=`<tr class="${M.p[i]<0.05?"":"sig-no"}"><td>${etiqueta(n)}</td><td class="num">${fmt(M.beta[i],3)}</td><td class="num">${fmt(M.ee[i],3)}</td><td class="num">${fmt(M.z[i],2)}</td><td class="num">${fp(M.p[i])}</td><td class="num">${fmt(Math.exp(M.beta[i]),3)}</td><td class="num">${fmt(M.ic_inf[i],3)}–${fmt(M.ic_sup[i],3)}</td><td class="num">${i?fmt(S.ic_inf_esc[j],3)+"–"+fmt(S.ic_sup_esc[j],3):"–"}</td></tr>`;});
+  $("t-coef").innerHTML=html;const b0=M.beta[0],bs=M.beta[IDX.RED_SNSS];
+  $("int-coef").innerHTML=`<p>Cada OR compara la chance (odds) de EHP de una categoría con la de su referencia, <b>manteniendo constantes las demás variables</b>. ${NOMB.length-1-M.p.slice(1).filter(p=>p>=0.05).length} de los ${NOMB.length-1} coeficientes tienen p &lt; 0,05; la excepción es menores de un año (p = ${fmt(M.p[IDX["EDAD_Menor de 1 año"]],3)}). Con este tamaño de muestra la relevancia se juzga por la magnitud del OR.</p><p><b>Del OR a la probabilidad:</b> el perfil de referencia (hombre, 30 a 39 años, ISAPRE, No SNSS, digestivo) tiene p̂ = 1/(1 + e<sup>${fmt(-b0,3)}</sup>) = ${fpct(expit(b0)*100)}; el mismo perfil en el SNSS tiene ${fpct(expit(b0+bs)*100)}. Su odds se multiplica por ${fmt(Math.exp(bs),2)}, pero su probabilidad por ${fmt(expit(b0+bs)/expit(b0),1)}. Prueba distintos perfiles en la pestaña de simulación.</p>`;
+  // Razón de verosimilitud
+  seg("seg-g",[["G","G (nominal)"],["Gphi","G/φ̂ (escalado)"]],gTipo,v=>{gTipo=v;ranking();});ranking();
+  const hip={"Diagnóstico (capítulo CIE-10)":"Control","Edad (GRUPO_EDAD)":"H<sub>0,1</sub>","Red (SNSS)":"H<sub>0,3</sub>","Previsión":"H<sub>0,2</sub>","Sexo":"Control"};
+  $("t-lr").innerHTML="<tr><th>Variable eliminada</th><th>Hipótesis</th><th class='num'>q</th><th class='num'>D reducido</th><th class='num'>G</th><th class='num'>χ²<sub>q; 0,95</sub></th><th class='num'>G/φ̂</th><th class='num'>% D nula</th><th class='num'>p</th></tr>"+
+    Lr.tabla.map((t,i)=>`<tr><td>${t.variable}</td><td>${hip[t.variable]}</td><td class="num">${t.q}</td><td class="num">${fmt(t.D_red,1)}</td><td class="num"><b>${fmt(t.G,1)}</b></td><td class="num">${fmt(t.critico,2)}</td><td class="num">${fmt(S.G_phi[i],1)}</td><td class="num">${fmt(t.pct,2)}</td><td class="num">${fp(t.p)}</td></tr>`).join("");
+  $("lr-global").innerHTML=`Prueba global: D nula = ${fmt(Lr.D_nula,1)}, D modelo = ${fmt(Lr.D_completo,1)}, <b>G = ${fmt(Lr.G_global,1)}</b>, q = ${Lr.q_global}, p ${fp(chi2sf(Lr.G_global,Lr.q_global))}. Se rechaza que todos los coeficientes valgan 0.`;
+  $("int-lr").innerHTML=`<p>G = D<sub>reducido</sub> − D<sub>completo</sub> ∼ χ²<sub>q</sub>. Al eliminar cualquiera de las cinco variables la devianza aumenta de forma significativa, por lo que <b>se rechazan H<sub>0,1</sub>, H<sub>0,2</sub> y H<sub>0,3</sub></b>, también con G/φ̂. El diagnóstico es lo que más aporta al ajuste, seguido de la edad y la red, con aportes similares; la previsión y el sexo aportan más de diez veces menos. Como G crece con q, el orden compara variables completas; la fuerza de cada categoría se lee en su OR.</p>`;
+  // Comparación de modelos
+  const cm=Lr.comparacion;$("t-modelos").innerHTML="<tr><th>Modelo</th><th class='num'>K</th><th class='num'>Devianza</th><th class='num'>AIC</th><th class='num'>BIC</th><th class='num'>R² McF</th></tr>"+
+    cm.map((m,i)=>`<tr ${i===3?"style='font-weight:650'":""}><td>${m.modelo}</td><td class="num">${m.k}</td><td class="num">${fmt(m.D,1)}</td><td class="num">${fmt(m.aic,1)}</td><td class="num">${fmt(m.bic,1)}</td><td class="num">${fmt(m.r2,3)}</td></tr>`).join("");
+  plot("g-modelos",[{type:"bar",x:cm.map(m=>m.modelo.split(":")[0]),y:cm.map(m=>m.r2),name:"R² McFadden",marker:{color:cm.map((m,i)=>i===3?C.nar:C.azul)},text:cm.map(m=>fmt(m.r2,3)),textposition:"outside",
+    customdata:cm.map(m=>[m.modelo,fmt(m.aic,0),fmt(m.bic,0)]),hovertemplate:"%{customdata[0]}<br>R² McF = %{y:.4f}<br>AIC = %{customdata[1]}<br>BIC = %{customdata[2]}<extra></extra>"}],
+    {yaxis:{title:"R² de McFadden",range:[0,0.18]},showlegend:false});
+  $("int-modelos").innerHTML=`<p><b>M3</b> (completo, edad por tramos) tiene la menor devianza, AIC y BIC. Agregar el diagnóstico (M1 → M3) sube el R² de ${fmt(cm[1].r2,3)} a ${fmt(cm[3].r2,3)}. M2 está anidado en M3: G = ${fmt(Lr.G_edad,1)}, q = 9, p ${fp(Lr.p_edad)}, de modo que los tramos mejoran el ajuste aunque la ganancia en R² es pequeña. Con n ≈ 10<sup>6</sup>, AIC y BIC tienden a favorecer modelos grandes; la elección también se apoya en la linealidad del logit y en la pregunta de investigación.</p>`;
+  // Crudo frente a ajustado
+  const Cr=D.crudo;const cats=Cr.tabla.map(t=>t.comp);
+  const serie=(k,nom,col,sim)=>({type:"scatter",mode:"markers",name:nom,y:cats,x:Cr.tabla.map(t=>t[k]?t[k][0]:null),marker:{color:col,size:11,symbol:sim},
+    error_x:{type:"data",symmetric:false,array:Cr.tabla.map(t=>t[k]?t[k][2]-t[k][0]:null),arrayminus:Cr.tabla.map(t=>t[k]?t[k][0]-t[k][1]:null),color:col,thickness:1.2,width:3},hovertemplate:"%{y}<br>"+nom+": %{x:.2f}<extra></extra>"});
+  plot("g-crudo",[serie("crudo","OR crudo",C.gris2,"circle"),serie("prev_red","OR ajustado solo por previsión y red",C.verde,"diamond"),serie("completo","OR modelo completo",C.nar,"square")],
+    {xaxis:{type:"log",title:"Odds ratio (escala log)",tickvals:[0.5,1,2,3,4,5],ticktext:["0,5","1","2","3","4","5"]},yaxis:{autorange:"reversed",type:"category"},margin:{l:10},
+     shapes:[{type:"line",x0:1,x1:1,y0:0,y1:1,yref:"paper",line:{color:"#111",dash:"dash",width:1}}],legend:{y:-0.22}});
+  plot("g-pctsnss",[{type:"bar",x:Cr.pct_snss_prev,y:Cr.pct_snss_val,marker:{color:Cr.pct_snss_prev.map(p=>p==="FONASA"?C.nar:p==="ISAPRE"?C.azul:C.gris2)},text:Cr.pct_snss_val.map(v=>fpct(v)),textposition:"outside",hovertemplate:"%{x}: %{y:.1f} % en el SNSS<extra></extra>"}],
+    {yaxis:{title:"% de egresos en establecimientos del SNSS",range:[0,90]},showlegend:false});
+  const fo=Cr.tabla.find(t=>t.comp.startsWith("FONASA")),sn=Cr.tabla.find(t=>t.comp.startsWith("SNSS"));
+  $("int-crudo").innerHTML=`<p><b>Previsión:</b> es el cambio más marcado. El OR de FONASA frente a ISAPRE baja de ${fmt(fo.crudo[0],2)} a ${fmt(fo.prev_red[0],2)} con solo ajustar por la red, porque el ${fpct(Cr.pct_snss_val[0])} de los egresos FONASA ocurre en el SNSS, frente al ${fpct(Cr.pct_snss_val[Cr.pct_snss_prev.indexOf("ISAPRE")])} de los de ISAPRE: la asociación bivariada se debe en gran parte a dónde se atiende cada grupo. <b>Red:</b> casi no cambia (${fmt(sn.crudo[0],2)} → ${fmt(sn.completo[0],2)}). <b>Edad:</b> se reduce a cerca de la mitad, y los menores de un año pasan de ${fmt(Cr.tabla[4].crudo[0],2)} a ${fmt(Cr.tabla[4].completo[0],2)}. Como el OR no es colapsable, la comparación es orientativa.</p>`;
+  // Tabla C.1
+  const g=totA_sinFiltro("cap");const filasC=CAT.cap.map((c,i)=>({c,gl:CAT.cap_glosa[i],n:g.n[i],t:g.e[i]/g.n[i]*100,i})).sort((a,b)=>b.t-a.t);
+  $("t-c1").innerHTML="<tr><th>Capítulo (nombre corto)</th><th>Glosa CIE-10</th><th class='num'>Egresos</th><th class='num'>% EHP</th><th class='num'>OR ajustado</th><th class='num'>IC 95 %</th></tr>"+
+    filasC.map(f=>{const k=IDX["CAPITULO_"+f.c];return `<tr><td>${f.c}</td><td class="mini">${f.gl}</td><td class="num">${fint(f.n)}</td><td class="num">${fpct(f.t)}</td><td class="num">${k===undefined?"1 (ref.)":fmt(Math.exp(M.beta[k]),2)}</td><td class="num">${k===undefined?"–":fmt(M.ic_inf[k],2)+"–"+fmt(M.ic_sup[k],2)}</td></tr>`;}).join("");
+  // ROC
+  initROC();}
+function forest(){let idx=NOMB.map((n,i)=>i).filter(i=>i>0);if(forestGrupo!=="todas")idx=idx.filter(i=>grupoCoef(NOMB[i])===forestGrupo);
+  const ordG=["CAPITULO","EDAD","PREVISION","RED","SEXO"];idx.sort((a,b)=>{const ga=ordG.indexOf(grupoCoef(NOMB[a])),gb=ordG.indexOf(grupoCoef(NOMB[b]));return ga!==gb?ga-gb:M.beta[a]-M.beta[b];});
+  const S=D.sensibilidad;const lo=i=>icTipo==="nom"?M.ic_inf[i]:S.ic_inf_esc[i],hi=i=>icTipo==="nom"?M.ic_sup[i]:S.ic_sup_esc[i];
+  const tr=ordG.filter(g=>idx.some(i=>grupoCoef(NOMB[i])===g)).map(g=>{const ii=idx.filter(i=>grupoCoef(NOMB[i])===g);return {type:"scatter",mode:"markers",name:NOMG[g],y:ii.map(i=>etiqueta(NOMB[i])),x:ii.map(i=>Math.exp(M.beta[i])),
+    marker:{color:COLG[g],size:8},error_x:{type:"data",symmetric:false,array:ii.map(i=>hi(i)-Math.exp(M.beta[i])),arrayminus:ii.map(i=>Math.exp(M.beta[i])-lo(i)),color:COLG[g],thickness:1.4,width:3},
+    customdata:ii.map(i=>[fmt(lo(i),2),fmt(hi(i),2),fp(M.p[i])]),hovertemplate:"%{y}<br>OR = %{x:.3f} (IC 95 %: %{customdata[0]}–%{customdata[1]})<br>p %{customdata[2]}<extra></extra>"};});
+  const h=Math.max(320,idx.length*21+110);$("g-forest").style.height=h+"px";
+  plot("g-forest",tr,{xaxis:{type:"log",title:"Odds ratio ajustado (escala log), IC 95 %",tickvals:[0.3,0.5,1,2,4,8],ticktext:["0,3","0,5","1","2","4","8"]},yaxis:{autorange:"reversed",type:"category"},margin:{l:10},
+    shapes:[{type:"line",x0:1,x1:1,y0:0,y1:1,yref:"paper",line:{color:"#111",dash:"dash",width:1}}],legend:{orientation:"h",y:-60/h}});}
+function ranking(){const Lr=D.lr,S=D.sensibilidad;const t=Lr.tabla.map((x,i)=>({v:x.variable,G:gTipo==="G"?x.G:S.G_phi[i],q:x.q,crit:x.critico})).sort((a,b)=>a.G-b.G);
+  plot("g-ranking",[{type:"bar",orientation:"h",y:t.map(x=>x.v),x:t.map(x=>x.G),marker:{color:t.map(x=>x.v.startsWith("Diag")||x.v==="Sexo"?C.gris2:C.azul)},text:t.map(x=>fmt(x.G,1)+" (q = "+x.q+")"),textposition:"outside",cliponaxis:false,
+    customdata:t.map(x=>fmt(x.crit,2)),hovertemplate:"%{y}<br>"+(gTipo==="G"?"G":"G/φ̂")+" = %{x:,.1f}<br>Valor crítico χ²: %{customdata}<extra></extra>"}],
+    {xaxis:{title:gTipo==="G"?"Razón de verosimilitud G al eliminar la variable":"G/φ̂ (corregido por sobredispersión)",range:[0,Math.max(...t.map(x=>x.G))*1.3]},yaxis:{type:"category"},margin:{l:10},showlegend:false});}
+// ROC y punto de corte a partir de los patrones de covariables (probabilidades exactas del modelo)
+let ROC=null;
+function initROC(){const P=D.patrones;const o=P.p.map((p,i)=>i).sort((a,b)=>P.p[b]-P.p[a]);const n1=P.O.reduce((a,b)=>a+b,0),n0=P.n.reduce((a,b)=>a+b,0)-n1;
+  const fpr=[0],tpr=[0],thr=[Infinity];let tp=0,fp=0;for(let k=0;k<o.length;k++){const i=o[k];tp+=P.O[i];fp+=P.n[i]-P.O[i];if(k<o.length-1&&P.p[o[k+1]]===P.p[i])continue;fpr.push(fp/n0);tpr.push(tp/n1);thr.push(P.p[i]);}
+  let j=0,best=-1;for(let k=1;k<fpr.length;k++){const J=tpr[k]-fpr[k];if(J>best){best=J;j=k;}}ROC={fpr,tpr,thr,n1,n0,youden:thr[j],prev:n1/(n1+n0)};
+  const sl=$("corte");sl.max=Math.ceil(Math.max(...P.p)*100)/100;sl.oninput=()=>ponerCorte(+sl.value);
+  document.querySelectorAll("#modelo button[data-c]").forEach(b=>b.onclick=()=>ponerCorte(b.dataset.c==="youden"?ROC.youden:b.dataset.c==="prev"?ROC.prev:0.5));
+  const filas=[["c = 0,5",0.5],["c = "+fmt(ROC.prev,3)+" (prevalencia)",ROC.prev],["c = "+fmt(ROC.youden,3)+" (Youden)",ROC.youden]].map(x=>[x[0],metricas(x[1])]);
+  $("t-cortes").innerHTML="<tr><th>Corte</th><th class='num'>Exactitud</th><th class='num'>Sensibilidad</th><th class='num'>Especificidad</th><th class='num'>VPP</th><th class='num'>VPN</th><th class='num'>F1</th><th class='num'>J de Youden</th></tr>"+
+    filas.map(([n,m])=>`<tr><td>${n}</td><td class="num">${fmt(m.acc,3)}</td><td class="num">${fmt(m.se,3)}</td><td class="num">${fmt(m.sp,3)}</td><td class="num">${fmt(m.vpp,3)}</td><td class="num">${fmt(m.vpn,3)}</td><td class="num">${fmt(m.f1,3)}</td><td class="num">${fmt(m.J,3)}</td></tr>`).join("");
+  const my=filas[2][1];
+  $("int-roc").innerHTML=`<p><b>AUC = ${fmt(D.roc.auc,3)}</b> (IC 95 %: ${fmt(D.roc.ic[0],3)}–${fmt(D.roc.ic[1],3)}), aceptable (0,7 a 0,8). Equivale al estadístico U de Mann–Whitney: en ${fmt(D.roc.auc*100,0)} de cada 100 pares formados por un egreso con EHP y otro sin EHP, el modelo asigna mayor probabilidad al primero.</p><p>Con c = 0,5 la exactitud (${fmt(filas[0][1].acc,3)}) es casi igual a la de predecir siempre "normal" (${fmt(1-ROC.prev,3)}), pero la sensibilidad es solo ${fmt(filas[0][1].se,3)}: con una prevalencia de 21,65 % la exactitud engaña. Con el corte de Youden el modelo identifica ${fint(my.tp)} de los ${fint(ROC.n1)} egresos con EHP, a costa de ${fmt(my.fp/my.tp,2)} falsos positivos por cada verdadero positivo. El VPN alto (${fmt(my.vpn,3)}) indica que clasificar un egreso como "normal" es bastante confiable. La clasificación es un complemento: el objetivo principal es estimar y contrastar los efectos.</p>`;
+  ponerCorte(ROC.youden);}
+function metricas(c){const P=D.patrones;let tp=0,fp=0;for(let i=0;i<P.p.length;i++)if(P.p[i]>=c){tp+=P.O[i];fp+=P.n[i]-P.O[i];}const fn=ROC.n1-tp,tn=ROC.n0-fp;
+  const se=tp/ROC.n1,sp=tn/ROC.n0,vpp=tp+fp?tp/(tp+fp):NaN,vpn=tn/(tn+fn);return {tp,fp,fn,tn,se,sp,vpp,vpn,acc:(tp+tn)/(ROC.n1+ROC.n0),f1:2*vpp*se/(vpp+se),J:se+sp-1};}
+function ponerCorte(c){corteActual=c;$("corte").value=c;$("corte-v").textContent=fmt(c,3);const m=metricas(c);
+  plot("g-roc",[{type:"scatter",mode:"lines",x:ROC.fpr,y:ROC.tpr,name:"Modelo (AUC = "+fmt(D.roc.auc,3)+")",line:{color:C.azul,width:2.4},customdata:ROC.thr.map(t=>isFinite(t)?fmt(t,3):"–"),hovertemplate:"Corte %{customdata}<br>1 − Esp. = %{x:.3f}<br>Sens. = %{y:.3f}<extra></extra>"},
+    {type:"scatter",mode:"lines",x:[0,1],y:[0,1],name:"Azar (AUC = 0,5)",line:{color:"#111",dash:"dash",width:1}},
+    {type:"scatter",mode:"markers",x:[1-m.sp],y:[m.se],name:"Corte actual (c = "+fmt(c,3)+")",marker:{color:C.nar,size:13,line:{color:"#fff",width:2}}}],
+    {xaxis:{title:"1 − especificidad",range:[0,1]},yaxis:{title:"Sensibilidad",range:[0,1.02]},legend:{y:-0.2}});
+  plot("g-cm",[{type:"heatmap",x:["Normal","EHP"],y:["Normal","EHP"],z:[[m.tn,m.fp],[m.fn,m.tp]],colorscale:[[0,"#EFF4FB"],[1,C.azul]],showscale:false,
+    text:[[`VN<br>${fint(m.tn)}`,`FP<br>${fint(m.fp)}`],[`FN<br>${fint(m.fn)}`,`VP<br>${fint(m.tp)}`]],texttemplate:"%{text}",textfont:{size:15},hovertemplate:"Real %{y} · Modelo %{x}: %{z:,.0f}<extra></extra>"}],
+    {xaxis:{title:"Clasificación del modelo",side:"bottom"},yaxis:{title:"Valor real",autorange:"reversed"},margin:{l:70,t:10}});
+  $("t-metricas").innerHTML="<tr><th>Medida (c = "+fmt(c,3)+")</th><th class='num'>Valor</th></tr>"+[["Sensibilidad (recall)",m.se],["Especificidad",m.sp],["VPP (precisión)",m.vpp],["VPN",m.vpn],["F1",m.f1],["Exactitud",m.acc],["J de Youden",m.J]]
+    .map(x=>`<tr><td>${x[0]}</td><td class="num">${fmt(x[1],3)}</td></tr>`).join("")+`<tr><td>Falsos positivos por verdadero positivo</td><td class="num">${fmt(m.fp/m.tp,2)}</td></tr>`;}
+
+// =====================================================================
+// 6. SIMULACIÓN WHAT IF
+// =====================================================================
+const WI={edad:4,sexo:0,prev:0,red:0,cap:0};let WI_A=null,wiVar="edad";
+const PATRON=new Map();D.patrones.cod.forEach((c,i)=>PATRON.set(c.join(","),i));
+function vectorX(s){const x=new Array(NOMB.length).fill(0);x[0]=1;const e=CAT.edad[s.edad];if(e!=="30 a 39")x[IDX["EDAD_"+e]]=1;if(s.sexo===1)x[IDX.SEXO_MUJER]=1;
+  if(s.prev>0)x[IDX["PREVISION_"+CAT.prev[s.prev]]]=1;if(s.red===1)x[IDX.RED_SNSS]=1;if(s.cap>0)x[IDX["CAPITULO_"+CAT.cap[s.cap]]]=1;return x;}
+function quad(v){let s=0;for(let i=0;i<v.length;i++){if(!v[i])continue;for(let j=0;j<v.length;j++)if(v[j])s+=v[i]*M.cov[i][j]*v[j];}return s;}
+function predecir(s){const x=vectorX(s);let eta=0;x.forEach((v,i)=>eta+=v*M.beta[i]);const f=$("wi-ic")&&$("wi-ic").value==="esc"?Math.sqrt(PHI):1;const se=Math.sqrt(quad(x))*f;
+  return {eta,p:expit(eta),lo:expit(eta-1.96*se),hi:expit(eta+1.96*se),se,x};}
+function observado(s){if(s===undefined)return null;const i=PATRON.get([s.edad,s.sexo,s.prev,s.red,s.cap].join(","));if(i===undefined)return null;return {n:D.patrones.n[i],O:D.patrones.O[i]};}
+function initWhatIf(){const opt=(arr,f)=>arr.map((c,i)=>`<option value="${i}">${f?f(c,i):c}</option>`).join("");
+  $("wi-edad").innerHTML=opt(CAT.edad,c=>c==="30 a 39"?c+" (ref.)":c);$("wi-sexo").innerHTML=opt(["Hombre (ref.)","Mujer"]);
+  $("wi-prev").innerHTML=opt(CAT.prev,c=>c==="ISAPRE"?c+" (ref.)":c);$("wi-red").innerHTML=opt(["No SNSS (ref.)","SNSS"]);
+  $("wi-cap").innerHTML=CAT.cap.map((c,i)=>({c,i})).sort((a,b)=>a.i===0?-1:b.i===0?1:a.c.localeCompare(b.c,"es")).map(o=>`<option value="${o.i}">${o.c}${o.i===0?" (ref.)":""}</option>`).join("");
+  for(const k of ["edad","sexo","prev","red","cap"])$("wi-"+k).addEventListener("change",()=>{WI[k]=+$("wi-"+k).value;actualizarWI();});
+  $("wi-ic").addEventListener("change",actualizarWI);
+  const presets={ref:{edad:4,sexo:0,prev:0,red:0,cap:0},mayor:{edad:CAT.edad.indexOf("80 a 89"),sexo:0,prev:1,red:1,cap:CAT.cap.indexOf("Circulatorio")},
+    parto:{edad:CAT.edad.indexOf("30 a 39"),sexo:1,prev:0,red:0,cap:CAT.cap.indexOf("Embarazo y parto")},mental:{edad:CAT.edad.indexOf("20 a 29"),sexo:0,prev:1,red:1,cap:CAT.cap.indexOf("Trastornos mentales")}};
+  document.querySelectorAll("[data-preset]").forEach(b=>b.addEventListener("click",()=>{Object.assign(WI,presets[b.dataset.preset]);sincWI();actualizarWI();}));
+  $("wi-guardar").addEventListener("click",()=>{WI_A={...WI};actualizarWI();});
+  seg("seg-wi",[["edad","Edad"],["prev","Previsión"],["red","Red"],["sexo","Sexo"],["cap","Capítulo"]],wiVar,v=>{wiVar=v;graficoVar();});
+  const ajustarGrid=()=>{$("wi-grid").style.gridTemplateColumns=window.innerWidth<980?"1fr":"minmax(0,300px) minmax(0,1fr) minmax(0,1fr)";};window.addEventListener("resize",ajustarGrid);ajustarGrid();}
+function sincWI(){for(const k of ["edad","sexo","prev","red","cap"])$("wi-"+k).value=WI[k];}
+function descPerfil(s){return `${CAT.edad[s.edad]} años · ${s.sexo?"mujer":"hombre"} · ${CAT.prev[s.prev]} · ${CAT.red[s.red]} · ${CAT.cap[s.cap]}`.replace("Menor de 1 año años","menor de 1 año").replace("90 y más años","90 años y más");}
+function actualizarWI(){const r=predecir(WI);const esc=$("wi-ic").value==="esc";
+  $("wi-p").textContent=fpct(r.p*100);$("wi-ic-txt").innerHTML=`IC 95 %${esc?" escalado":""}: ${fpct(r.lo*100)} – ${fpct(r.hi*100)}`;
+  $("wi-barra").style.width=(r.p*100)+"%";$("wi-icbar").style.left=(r.lo*100)+"%";$("wi-icbar").style.width=Math.max(0.4,(r.hi-r.lo)*100)+"%";$("wi-marca").style.left=(D.roc.prevalencia*100)+"%";
+  const ref=predecir({edad:4,sexo:0,prev:0,red:0,cap:0});const ob=observado(WI);const odds=r.p/(1-r.p);
+  $("wi-res").innerHTML=card("Logit x'β̂",fmt(r.eta,3))+card("Odds de EHP",fmt(odds,3))+card("OR frente al perfil de referencia",fmt(Math.exp(r.eta-ref.eta),2))+
+    card("Frente a la prevalencia global",(r.p>=D.roc.prevalencia?"+":"")+fmt((r.p-D.roc.prevalencia)*100,1)+" pp")+
+    card("Observado en los datos (mismo perfil)",ob?`${fpct(ob.O/ob.n*100)} <span class="mini">(n = ${fint(ob.n)})</span>`:"sin egresos con este perfil")+
+    card("Clasificación con corte de Youden",r.p>=0.1969?"EHP":"Normal");
+  // Comparación de escenarios
+  if(WI_A){const a=predecir(WI_A);const dx=r.x.map((v,i)=>v-a.x[i]);const d=r.eta-a.eta;const f=esc?Math.sqrt(PHI):1;const se=Math.sqrt(quad(dx))*f;
+    $("wi-comp").innerHTML=`<table><tr><th></th><th class="num">Probabilidad</th></tr><tr><td><b>A:</b> <span class="mini">${descPerfil(WI_A)}</span></td><td class="num">${fpct(a.p*100)}</td></tr><tr><td><b>Actual:</b> <span class="mini">${descPerfil(WI)}</span></td><td class="num">${fpct(r.p*100)}</td></tr></table>
+      <div class="res">${card("Diferencia (actual − A)",(d>=0?"+":"")+fmt((r.p-a.p)*100,1)+" pp")+card("Razón de probabilidades",fmt(r.p/a.p,2))+card("OR actual vs. A (IC 95 %)",se>0?`${fmt(Math.exp(d),2)} (${fmt(Math.exp(d-1.96*se),2)}–${fmt(Math.exp(d+1.96*se),2)})`:"1 (mismo perfil)")}</div>
+      <p class="mini" style="margin:4px 0 0">El OR entre dos perfiles es e<sup>(x<sub>B</sub> − x<sub>A</sub>)'β̂</sup>; no depende de las variables que comparten. La razón de probabilidades sí depende del perfil.</p>`;}
+  else $("wi-comp").innerHTML=`<p class="mini">Aún no hay escenario A guardado.</p>`;
+  graficoVar();graficoAporte(r);}
+function graficoVar(){const dim=wiVar;const cats=dim==="sexo"?["Hombre","Mujer"]:dim==="red"?CAT.red:CAT[dim];let orden=cats.map((c,i)=>i);
+  const pr=orden.map(i=>predecir({...WI,[dim]:i}));if(dim==="cap"||dim==="prev")orden=orden.sort((a,b)=>pr[a].p-pr[b].p);
+  const alt=dim==="red"?null:orden.map(i=>predecir({...WI,[dim]:i,red:1-WI.red}));
+  const obs=orden.map(i=>{const o=observado({...WI,[dim]:i});return o&&o.n>=30?o.O/o.n*100:null;});
+  const xs=orden.map(i=>cats[i]);const actual=WI[dim];
+  const tr=[{type:"scatter",mode:dim==="edad"?"lines+markers":"markers",name:"Perfil elegido ("+CAT.red[WI.red]+")",x:xs,y:orden.map(i=>pr[i].p*100),
+    error_y:{type:"data",symmetric:false,array:orden.map(i=>(pr[i].hi-pr[i].p)*100),arrayminus:orden.map(i=>(pr[i].p-pr[i].lo)*100),color:C.nar,thickness:1.3,width:4},
+    marker:{size:orden.map(i=>i===actual?15:9),color:C.nar,line:{color:"#fff",width:orden.map(i=>i===actual?2:0)}},line:{color:C.nar,width:2},
+    customdata:orden.map(i=>[fmt(pr[i].lo*100,1),fmt(pr[i].hi*100,1)]),hovertemplate:"%{x}: %{y:.1f} % (IC 95 %: %{customdata[0]}–%{customdata[1]} %)<extra>Perfil elegido</extra>"}];
+  if(alt)tr.push({type:"scatter",mode:dim==="edad"?"lines+markers":"markers",name:"Mismo perfil en "+CAT.red[1-WI.red],x:xs,y:orden.map((i,k)=>alt[k].p*100),marker:{size:8,color:C.azul,symbol:"circle-open",line:{width:2}},line:{color:C.azul,width:1.6,dash:"dot"},hovertemplate:"%{x}: %{y:.1f} %<extra>"+CAT.red[1-WI.red]+"</extra>"});
+  tr.push({type:"scatter",mode:"markers",name:"Proporción observada (n ≥ 30)",x:xs,y:obs,marker:{symbol:"diamond",size:9,color:C.gris},hovertemplate:"%{x}: observado %{y:.1f} %<extra></extra>"});
+  plot("g-wi-var",tr,{xaxis:{type:"category",tickangle:(dim==="cap"||dim==="edad")?-40:0,tickfont:{size:dim==="cap"?10:12}},yaxis:{title:"Probabilidad estimada de EHP (%)",rangemode:"tozero"},legend:{y:-0.38},
+    shapes:[{type:"line",x0:0,x1:1,xref:"paper",y0:D.roc.prevalencia*100,y1:D.roc.prevalencia*100,line:{color:C.gris2,dash:"dash",width:1}}]});}
+function graficoAporte(r){const items=[["Intercepto (perfil de referencia)",M.beta[0]]];r.x.forEach((v,i)=>{if(i>0&&v)items.push([etiqueta(NOMB[i]),M.beta[i]]);});
+  const resto=[["Edad: 30 a 39 (ref.)",WI.edad===4],["Sexo: hombre (ref.)",WI.sexo===0],["Previsión: ISAPRE (ref.)",WI.prev===0],["Red: No SNSS (ref.)",WI.red===0],["Cap.: Digestivo (ref.)",WI.cap===0]].filter(x=>x[1]).map(x=>[x[0],0]);
+  const all=[...items,...resto];
+  plot("g-wi-aporte",[{type:"bar",orientation:"h",y:all.map(x=>x[0]),x:all.map(x=>x[1]),marker:{color:all.map((x,i)=>i===0?C.gris2:x[1]>0?C.nar:C.azul)},text:all.map(x=>(x[1]>0?"+":"")+fmt(x[1],3)+(x[0].startsWith("Inter")?"":" (OR "+fmt(Math.exp(x[1]),2)+")")),
+    textposition:"outside",cliponaxis:false,hovertemplate:"%{y}: β̂ = %{x:.3f}<extra></extra>"}],
+    {xaxis:{title:"Aporte al logit (β̂)",range:[Math.min(-3.6,...all.map(x=>x[1]))*1.15,Math.max(2.6,...all.map(x=>x[1]))*1.45]},yaxis:{autorange:"reversed",type:"category"},margin:{l:10,t:44},showlegend:false,
+     annotations:[{x:0,xanchor:"left",xref:"paper",y:1.1,yref:"paper",showarrow:false,text:`Suma = logit = ${fmt(r.eta,3)} → p̂ = ${fpct(r.p*100)}`,font:{color:C.navy,size:12}}]});}
+function renderWhatIf(){if(!renderizado.wiInit){initWhatIf();renderizado.wiInit=true;}sincWI();actualizarWI();}
+
+// =====================================================================
+// 7. CONCLUSIONES
+// =====================================================================
+function renderConclusiones(){const Lr=D.lr.tabla;const g=v=>Lr.find(t=>t.variable.startsWith(v));const o=n=>{const i=IDX[n];return `${fmt(Math.exp(M.beta[i]),2)} (${fmt(M.ic_inf[i],2)}–${fmt(M.ic_sup[i],2)})`;};
+  const f=[["H<sub>0,1</sub> (edad)",`G = ${fmt(g("Edad").G,1)}; q = 10; p ${fp(g("Edad").p)}`,`60 a 69: ${o("EDAD_60 a 69")}; 80 a 89: ${o("EDAD_80 a 89")}; 90 y más: ${o("EDAD_90 y más")}`,"Se rechaza H<sub>0,1</sub>; H<sub>1,1</sub> se confirma, con la excepción de los menores de un año"],
+    ["H<sub>0,2</sub> (previsión)",`G = ${fmt(g("Previsión").G,1)}; q = 5; p ${fp(g("Previsión").p)}`,`FONASA vs. ISAPRE: ${o("PREVISION_FONASA")} (crudo: 3,25)`,"Se rechaza H<sub>0,2</sub>, pero el efecto propio de FONASA es mínimo: la brecha se explica por la red"],
+    ["H<sub>0,3</sub> (red)",`G = ${fmt(g("Red").G,1)}; q = 1; p ${fp(g("Red").p)}`,`SNSS vs. No SNSS: ${o("RED_SNSS")}`,"Se rechaza H<sub>0,3</sub>; H<sub>1,3</sub> se confirma y es el efecto más robusto"]];
+  $("t-hip").innerHTML="<tr><th>Hipótesis</th><th>Razón de verosimilitud</th><th>Efecto ajustado, OR (IC 95 %)</th><th>Decisión</th></tr>"+f.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("");}
+
+// =====================================================================
+// Inicio
+// =====================================================================
+initFiltros();
+const inicial=(location.hash||"#portada").slice(1);
+irA(RENDER[inicial]?inicial:"portada");
+</script>
+</body>
+</html>
